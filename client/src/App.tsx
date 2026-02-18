@@ -7,13 +7,14 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import NotFound from "@/pages/not-found";
 import Home from "@/pages/home";
 import SecretProjects from "@/pages/secret-projects";
+import SQLSurvivor from "@/pages/sql-survivor";
 
 function Router() {
   return (
     <Switch>
       <Route path="/" component={Home} />
       <Route path="/secret-projects" component={SecretProjects} />
-      <Route path="/SQLSurvivor" component={SQLSurvivor} />
+      <Route path="/sql-survivor" component={SQLSurvivor} />
       <Route component={NotFound} />
     </Switch>
   );
