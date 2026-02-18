@@ -13,7 +13,7 @@ function Router() {
     <Switch>
       <Route path="/" component={Home} />
       <Route path="/secret-projects" component={SecretProjects} />
-      <Route path="/SQLSurvivor" element={<SQLSurvivor />} />
+      <Route path="/SQLSurvivor" component={SQLSurvivor} />
       <Route component={NotFound} />
     </Switch>
   );
