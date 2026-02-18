@@ -55,11 +55,11 @@
   }
   body {
     @apply font-body antialiased bg-brand-lime text-brand-black selection:bg-brand-pink selection:text-white overflow-x-hidden;
-    cursor: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32"><circle cx="10" cy="16" r="6" fill="white" stroke="black" stroke-width="2"/><circle cx="10" cy="16" r="3" fill="black"/><circle cx="22" cy="16" r="6" fill="white" stroke="black" stroke-width="2"/><circle cx="22" cy="16" r="3" fill="black"/></svg>') 16 16, auto;
+    cursor: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="52" height="32" viewBox="0 0 52 32"><circle cx="13" cy="16" r="11" fill="white" stroke="black" stroke-width="3"/><circle cx="13" cy="16" r="6" fill="black"/><circle cx="10" cy="13" r="2" fill="white"/><circle cx="39" cy="16" r="11" fill="white" stroke="black" stroke-width="3"/><circle cx="39" cy="16" r="6" fill="black"/><circle cx="36" cy="13" r="2" fill="white"/></svg>') 26 16, auto;
   }
-  
+
   a, button, [role="button"], .cursor-pointer {
-    cursor: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32"><circle cx="10" cy="16" r="6" fill="white" stroke="black" stroke-width="2"/><circle cx="12" cy="16" r="3" fill="black"/><circle cx="22" cy="16" r="6" fill="white" stroke="black" stroke-width="2"/><circle cx="24" cy="16" r="3" fill="black"/></svg>') 16 16, pointer;
+    cursor: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="52" height="32" viewBox="0 0 52 32"><circle cx="13" cy="16" r="11" fill="white" stroke="black" stroke-width="3"/><circle cx="15" cy="16" r="6" fill="black"/><circle cx="12" cy="13" r="2" fill="white"/><circle cx="39" cy="16" r="11" fill="white" stroke="black" stroke-width="3"/><circle cx="41" cy="16" r="6" fill="black"/><circle cx="38" cy="13" r="2" fill="white"/></svg>') 26 16, pointer;
   }
   
   h1, h2, h3, h4, h5, h6 {
