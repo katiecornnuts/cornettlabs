@@ -1,0 +1,658 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Learn SQL with Survivor</title>
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:opsz,wght@6..72,300;6..72,400;6..72,600;6..72,700&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--torch:#d4611e;--jungle:#2e6b47;--sand:#f5e6cc;--dark:#1a1612;--gray:#8a7e70;--light-bg:#f9f6f1;--page-bg:#f4f0e8;--border:#e0d8cc;--white:#fff}
+body{font-family:'Newsreader',Georgia,serif;background:var(--page-bg);color:var(--dark);line-height:1.6}
+.mono{font-family:'JetBrains Mono','Fira Code',monospace}
+header{background:linear-gradient(135deg,#1a1612,#2a2218);padding:20px 32px 12px;border-bottom:3px solid var(--torch)}
+.header-inner{max-width:1100px;margin:0 auto;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px}
+.header-title{font-size:28px;font-weight:700;color:var(--torch);letter-spacing:1px}
+.header-label{font-size:10px;font-weight:700;letter-spacing:3px;color:var(--gray);text-transform:uppercase}
+
+/* Torch Tracker */
+.torch-tracker{max-width:1100px;margin:0 auto;padding:8px 0 6px;display:flex;gap:4px;align-items:flex-end;justify-content:center;flex-wrap:wrap}
+.torch-item{display:flex;flex-direction:column;align-items:center;gap:2px;cursor:pointer;transition:transform 0.2s;min-width:36px}
+.torch-item:hover{transform:scale(1.15)}
+.torch-flame{font-size:22px;transition:all 0.3s;filter:grayscale(1) opacity(0.3)}
+.torch-flame.lit{filter:grayscale(0) opacity(1);animation:flicker 2s ease-in-out infinite alternate}
+.torch-flame.active{filter:grayscale(0) opacity(1);transform:scale(1.2)}
+.torch-num{font-size:9px;font-weight:700;color:#6a6258}
+.torch-num.lit{color:var(--torch)}
+.torch-num.active{color:var(--torch);font-weight:800}
+@keyframes flicker{0%{transform:scale(1) rotate(-2deg)}50%{transform:scale(1.05) rotate(1deg)}100%{transform:scale(1) rotate(-1deg)}}
+
+nav{background:var(--dark);border-bottom:1px solid #3a3228;position:sticky;top:0;z-index:100}
+.nav-inner{max-width:1100px;margin:0 auto;display:flex}
+.nav-btn{padding:12px 20px;border:none;border-bottom:2px solid transparent;background:transparent;color:#6a6258;font-size:13px;font-weight:600;cursor:pointer;letter-spacing:.5px;transition:all .2s}
+.nav-btn:hover{color:#c4b8a8}
+.nav-btn.active{color:#e8dfd4;border-bottom-color:var(--torch)}
+.api-gear{background:none;border:none;color:#6a6258;font-size:15px;cursor:pointer;padding:12px 10px}
+.api-bar{background:#2a2218;border-bottom:1px solid #3a3228;overflow:hidden;transition:max-height .3s}
+.api-bar-inner{max-width:1100px;margin:0 auto;padding:10px 24px;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.api-bar label{font-size:11px;color:var(--gray);white-space:nowrap}
+.api-bar input{flex:1;min-width:180px;padding:5px 10px;border-radius:5px;border:1px solid #4a4038;background:#1a1612;color:#e8dfd4;font-size:12px;outline:none}
+.api-bar .api-save{padding:5px 14px;border-radius:5px;border:1px solid var(--torch);background:var(--torch);color:var(--white);font-size:11px;font-weight:600;cursor:pointer}
+.api-bar .api-status{font-size:10px;color:#6a8a5a}
+
+main{max-width:1100px;margin:0 auto;padding:28px 24px}
+h2{font-size:24px;color:var(--dark);margin-bottom:6px}
+.subtitle{font-size:14px;color:#6a6258;line-height:1.6;margin-bottom:24px}
+
+/* Module Grid */
+.module-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:14px}
+.module-card{text-align:left;padding:20px;background:var(--white);border:1px solid var(--border);border-radius:12px;cursor:pointer;transition:all .2s;box-shadow:0 2px 8px rgba(0,0,0,.04);position:relative;overflow:hidden}
+.module-card:hover{box-shadow:0 4px 16px rgba(0,0,0,.08);transform:translateY(-1px)}
+.module-card.done{background:#f0faf2;border:2px solid var(--jungle)}
+.module-card .badge{position:absolute;top:10px;right:10px;background:var(--jungle);color:var(--white);font-size:9px;font-weight:700;padding:2px 7px;border-radius:10px}
+.module-card .icon{font-size:32px;margin-bottom:6px}
+.module-card .mod-label{font-size:10px;color:var(--torch);font-weight:700;letter-spacing:1px;margin-bottom:3px}
+.module-card h3{font-size:15px;font-weight:600;margin-bottom:10px}
+.module-card .count{font-size:12px;color:var(--gray);margin-bottom:10px}
+.progress-bar{display:flex;align-items:center;gap:10px}
+.progress-track{flex:1;height:7px;background:#e8e0d4;border-radius:4px;overflow:hidden;min-width:60px}
+.progress-fill{height:100%;background:linear-gradient(90deg,var(--torch),#e8943e);border-radius:4px;transition:width .5s}
+.progress-count{font-size:12px;font-weight:700;color:var(--gray);white-space:nowrap}
+
+.back-btn{display:inline-flex;align-items:center;gap:5px;background:none;border:none;color:var(--gray);font-size:13px;cursor:pointer;padding:0 0 16px;font-family:inherit}
+.back-btn:hover{color:var(--torch)}
+.concept-box{background:var(--light-bg);border:1px solid var(--border);border-radius:12px;padding:20px;margin:12px 0 28px;border-left:4px solid var(--jungle)}
+.concept-box .label{font-size:10px;font-weight:700;color:var(--jungle);letter-spacing:1px;margin-bottom:8px}
+.concept-box p{font-size:14px;line-height:1.7;color:#3a3228;margin-bottom:10px}
+.concept-box .tip{font-size:12px;color:var(--gray);font-style:italic;margin-top:6px}
+
+/* Code Block */
+.code-block{position:relative;background:#1a1612;border-radius:7px;padding:14px 18px;margin:10px 0;font-size:12px;line-height:1.7;color:#e8dfd4;overflow-x:auto;border:1px solid #3a3228}
+.code-block pre{margin:0;white-space:pre-wrap;word-wrap:break-word}
+.code-block .copy-btn{position:absolute;top:6px;right:6px;background:#2a2420;border:1px solid #4a4038;border-radius:3px;color:#c4b8a8;font-size:10px;padding:2px 8px;cursor:pointer}
+.code-block .copy-btn.copied{background:var(--jungle);color:var(--white)}
+.kw{color:#d4843e;font-weight:600}.str{color:#8fbc6f}.cmt{color:#6a6258}
+
+/* Scenario */
+.scenario{background:var(--white);border:1px solid var(--border);border-radius:12px;padding:20px;margin-bottom:16px;transition:all .3s;box-shadow:0 2px 8px rgba(0,0,0,.04)}
+.scenario.done{border:2px solid var(--jungle);box-shadow:0 0 0 3px rgba(46,107,71,.1)}
+.scenario.wrong{border:2px solid #c0392b;box-shadow:0 0 0 3px rgba(192,57,43,.1)}
+.scenario-top{display:flex;justify-content:space-between;align-items:flex-start;gap:10px;margin-bottom:10px}
+.scenario .s-label{font-size:11px;color:var(--torch);font-weight:700;letter-spacing:1px}
+.scenario h4{font-size:15px;font-weight:600;margin-top:3px}
+.check-btn{flex-shrink:0;width:26px;height:26px;border-radius:50%;border:2px solid #ccc;background:transparent;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:13px;color:var(--white);transition:all .2s}
+.check-btn.done{border-color:var(--jungle);background:var(--jungle)}
+.question{font-size:14px;line-height:1.6;color:#3a3228;margin-bottom:10px}
+.table-tags{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:12px}
+.table-tag{font-size:10px;font-weight:600;padding:2px 8px;border-radius:5px;background:#f0ebe2;color:#8a7060;border:1px solid #e0d4c4}
+.editor-label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--gray);margin-bottom:5px}
+.sql-editor{width:100%;min-height:70px;padding:10px 12px;font-size:12px;line-height:1.6;background:#faf8f5;border:1px solid var(--border);border-radius:7px;resize:vertical;color:var(--dark);outline:none}
+.sql-editor:focus{border-color:var(--torch);box-shadow:0 0 0 3px rgba(212,97,30,.1)}
+.toggle-row{display:flex;gap:6px;flex-wrap:wrap;margin-top:10px}
+.toggle-row button{padding:6px 13px;border-radius:5px;font-size:12px;font-weight:600;cursor:pointer;transition:all .2s}
+.hint-btn{border:1px solid #e0c97a;background:transparent;color:#9a7b20}
+.hint-btn.open{background:#fdf5e0}
+.answer-btn{border:1px solid #7bb88a;background:transparent;color:var(--jungle)}
+.answer-btn.open{background:#eaf5ec}
+.ai-toggle{border:1px solid #7ba3c8;background:transparent;color:#3b7ab5}
+.ai-toggle.open{background:#e8f0f8}
+.check-query-btn{border:1px solid var(--torch);background:var(--torch);color:var(--white)}
+.check-query-btn:hover{background:#c0551a}
+.hint-box{margin-top:10px;padding:10px 14px;background:#fdf8e8;border-radius:7px;border-left:3px solid #e0c97a;font-size:13px;color:#7a6520;font-style:italic;line-height:1.5}
+.answer-header{margin-top:10px;padding:3px 10px;background:#eaf5ec;border-radius:7px 7px 0 0;border-left:3px solid var(--jungle);display:inline-block;font-size:10px;font-weight:700;color:var(--jungle);letter-spacing:1px}
+
+/* Query feedback */
+.feedback-box{margin-top:10px;padding:12px 14px;border-radius:7px;font-size:13px;line-height:1.6}
+.feedback-box.correct{background:#eaf5ec;border-left:3px solid var(--jungle);color:#1a5a2a}
+.feedback-box.incorrect{background:#fef0ee;border-left:3px solid #c0392b;color:#7a1a1a}
+.feedback-box .fb-line{margin:3px 0;padding:2px 6px;border-radius:3px}
+.fb-right{background:rgba(46,107,71,.1);color:#1a5a2a}
+.fb-wrong{background:rgba(192,57,43,.1);color:#7a1a1a;text-decoration:line-through}
+.fb-missing{background:rgba(212,97,30,.1);color:#8a4a10}
+
+/* AI Chat */
+.ai-section{margin-top:14px;border-top:1px dashed var(--border);padding-top:14px}
+.ai-panel{margin-top:10px;background:#f8f9fc;border:1px solid #d4dde8;border-radius:9px;overflow:hidden}
+.ai-messages{max-height:280px;overflow-y:auto;padding:14px;display:flex;flex-direction:column;gap:8px}
+.ai-msg{padding:8px 12px;border-radius:7px;font-size:13px;line-height:1.6;max-width:88%;white-space:pre-wrap;word-wrap:break-word}
+.ai-msg.user{background:#e0ecf5;color:#1a3a5c;align-self:flex-end;border-bottom-right-radius:2px}
+.ai-msg.assistant{background:var(--white);color:#2a2a2a;align-self:flex-start;border:1px solid #e4e8ed;border-bottom-left-radius:2px}
+.ai-msg.system{background:#fdf8e8;color:#7a6520;align-self:center;font-size:11px;font-style:italic;text-align:center}
+.ai-msg.error{background:#fdeaea;color:#8b2020;align-self:center;font-size:12px}
+.ai-input-row{display:flex;border-top:1px solid #d4dde8}
+.ai-input{flex:1;padding:10px 12px;border:none;outline:none;font-size:13px;font-family:inherit;background:var(--white)}
+.ai-send{padding:10px 16px;border:none;background:#3b7ab5;color:var(--white);font-weight:600;font-size:13px;cursor:pointer}
+.ai-send:disabled{background:#a0b8cc;cursor:not-allowed}
+
+/* Bonus section */
+.bonus-section{margin-top:24px;padding:20px;background:#fef9f0;border:2px dashed #e0c97a;border-radius:12px}
+.bonus-title{font-size:14px;font-weight:700;color:#9a7b20;margin-bottom:12px;display:flex;align-items:center;gap:8px}
+
+/* Module nav */
+.mod-nav{display:flex;justify-content:space-between;margin-top:28px;padding-top:20px;border-top:1px solid var(--border)}
+.mod-nav button{padding:9px 18px;border-radius:7px;font-size:13px;cursor:pointer;font-family:inherit}
+.mod-nav .prev{border:1px solid var(--border);background:var(--white);color:#3a3228}
+.mod-nav .next{border:1px solid var(--torch);background:var(--torch);color:var(--white);font-weight:600}
+
+/* Tables */
+.table-card{background:var(--white);border:1px solid var(--border);border-radius:9px;padding:16px 20px;margin-bottom:10px}
+.table-name{font-size:15px;font-weight:700;color:var(--torch)}
+.table-rows{font-size:11px;color:var(--gray);background:var(--page-bg);padding:2px 8px;border-radius:10px}
+.table-desc{font-size:13px;color:#6a6258;margin-bottom:6px}
+.table-cols{font-size:11px;color:var(--gray);background:var(--light-bg);padding:5px 9px;border-radius:5px}
+
+/* Cheat */
+.cheat-table{background:var(--white);border:1px solid var(--border);border-radius:10px;overflow:hidden}
+.cheat-header{display:grid;grid-template-columns:130px 1fr 1fr;background:var(--dark);padding:10px 18px}
+.cheat-header span{font-size:10px;font-weight:700;color:var(--gray);letter-spacing:1px}
+.cheat-row{display:grid;grid-template-columns:130px 1fr 1fr;padding:9px 18px;border-top:1px solid #eee}
+.cheat-row:nth-child(even){background:var(--light-bg)}
+.cheat-kw{font-weight:700;color:var(--torch);font-size:12px}
+.cheat-does{font-size:13px;color:#3a3228}
+.cheat-ex{font-size:11px;color:#6a6258}
+.ops-box{margin-top:36px;background:var(--dark);border-radius:10px;padding:22px 26px}
+.ops-label{font-size:10px;font-weight:700;color:var(--torch);letter-spacing:1px;margin-bottom:10px}
+.ops-box p{color:#c4b8a8;font-size:13px;line-height:1.7;margin-bottom:14px}
+.ops-flow{display:flex;flex-wrap:wrap;gap:7px;align-items:center}
+.ops-kw{font-size:13px;font-weight:700;color:#d4843e;background:#2a2218;padding:3px 10px;border-radius:5px}
+.ops-arrow{color:#4a4038;font-size:14px}
+
+/* Modal overlay */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:1000;display:flex;align-items:center;justify-content:center;animation:fadeIn .3s}
+.modal-box{background:#1a1612;border:2px solid var(--torch);border-radius:16px;padding:36px 40px;max-width:520px;width:90%;text-align:center;animation:popIn .4s;position:relative}
+.modal-box h3{font-size:22px;color:var(--torch);margin-bottom:12px}
+.modal-box p{font-size:15px;color:#c4b8a8;line-height:1.7;margin-bottom:20px}
+.modal-box .modal-btn{padding:10px 28px;border:none;border-radius:8px;background:var(--torch);color:var(--white);font-size:15px;font-weight:600;cursor:pointer;font-family:inherit}
+.modal-box .modal-btn:hover{background:#c0551a}
+.modal-box .wrong-list{text-align:left;margin:12px 0 20px;padding:0 16px}
+.modal-box .wrong-list li{color:#e8943e;font-size:14px;margin:4px 0}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+@keyframes popIn{from{opacity:0;transform:scale(.85)}to{opacity:1;transform:scale(1)}}
+
+/* Tribe has spoken animation */
+.tribe-spoken-overlay{position:fixed;inset:0;background:rgba(0,0,0,.85);z-index:1001;display:flex;align-items:center;justify-content:center;flex-direction:column;animation:fadeIn .5s}
+.tribe-spoken-text{font-size:42px;font-weight:700;color:var(--torch);text-align:center;animation:torchReveal 1.5s ease-out;text-shadow:0 0 40px rgba(212,97,30,.6)}
+.tribe-spoken-sub{font-size:18px;color:#c4b8a8;margin-top:12px;animation:torchReveal 1.5s ease-out .3s both}
+.tribe-flame-row{font-size:48px;margin-bottom:20px;animation:torchReveal 1s ease-out}
+@keyframes torchReveal{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+
+footer{text-align:center;padding:28px 24px;color:var(--gray);font-size:12px;border-top:1px solid var(--border);margin-top:36px}
+.hidden{display:none}
+@media(max-width:600px){.header-inner{flex-direction:column;align-items:flex-start}.cheat-header,.cheat-row{grid-template-columns:90px 1fr 1fr}}
+</style>
+</head>
+<body>
+<header>
+  <div class="header-inner">
+    <div><div class="header-label mono">Learn SQL with</div><div class="header-title">SURVIVOR</div></div>
+    <div style="text-align:right"><div class="mono" style="font-size:10px;color:#6a6258;margin-bottom:4px">OVERALL PROGRESS</div>
+      <div class="progress-bar" style="width:180px"><div class="progress-track"><div class="progress-fill" id="globalFill" style="width:0%"></div></div><span class="progress-count mono" id="globalCount">0/0</span></div>
+    </div>
+  </div>
+  <div class="torch-tracker" id="torchTracker"></div>
+</header>
+<nav>
+  <div class="nav-inner">
+    <button class="nav-btn mono active" data-tab="lessons" onclick="switchTab('lessons')">Lessons</button>
+    <button class="nav-btn mono" data-tab="tables" onclick="switchTab('tables')">Database Tables</button>
+    <button class="nav-btn mono" data-tab="cheatsheet" onclick="switchTab('cheatsheet')">Cheat Sheet</button>
+    <div style="flex:1"></div>
+    <button class="api-gear" onclick="toggleApiBar()" title="AI Tutor Settings">⚙️</button>
+  </div>
+</nav>
+<div class="api-bar hidden" id="apiBar">
+  <div class="api-bar-inner">
+    <label class="mono">ANTHROPIC API KEY</label>
+    <input type="password" id="apiKeyInput" placeholder="sk-ant-...">
+    <button class="api-save mono" onclick="saveApiKey()">Save</button>
+    <span class="api-status mono" id="apiStatus"></span>
+    <span style="font-size:10px;color:#6a6258;margin-left:6px">Stored locally. Only sent to Anthropic API.</span>
+  </div>
+</div>
+<main>
+  <div id="tab-lessons"><div id="module-grid-view"><h2>Your Learning Path</h2><p class="subtitle" id="subtitleText"></p><div class="module-grid" id="moduleGrid"></div></div><div id="module-detail-view" class="hidden"></div></div>
+  <div id="tab-tables" class="hidden"><h2>Your Database Tables</h2><p class="subtitle">Each table is like a spreadsheet tab. Hover 📋 tags on scenarios to see columns.</p><div id="tablesContainer"></div></div>
+  <div id="tab-cheatsheet" class="hidden"><h2>SQL Quick Reference</h2><p class="subtitle">Keep this handy as you work through the lessons.</p><div id="cheatContainer"></div></div>
+</main>
+<footer><span style="color:var(--torch)">🔥</span> The tribe has spoken. Now go write some queries!</footer>
+<div id="modalContainer"></div>
+
+<script>
+// ===== DATA =====
+const ICONS = ['🔥','🏝️','🧭','🗳️','📦','🔗','🪆','🌊','🎯','🏆'];
+const MOD_ICONS_DESC = ['The Torch','Island Life','Navigation','Tribal Council','Supply Crate','The Alliance','Hidden Idol','Ocean Challenge','Target Practice','The Crown'];
+const TABLES_INFO=[
+  {name:"season_summary",desc:"One row per season",rows:"76",cols:"season, season_name, winner, location, n_cast, country, winner_id, n_tribes, n_finalists, n_jury, runner_ups, final_vote"},
+  {name:"castaways",desc:"One row per castaway per season",rows:"1,418",cols:"castaway, castaway_id, season, age, city, state, result, place, original_tribe, jury, finalist, winner"},
+  {name:"castaway_details",desc:"Biographical info per unique player",rows:"1,181",cols:"castaway_id, full_name, gender, personality_type, date_of_birth"},
+  {name:"episodes",desc:"Every episode ever aired",rows:"1,197",cols:"season, episode, episode_title, episode_date, episode_length, viewers, imdb_rating, n_ratings"},
+  {name:"vote_history",desc:"Every tribal council vote",rows:"9,376",cols:"season, episode, castaway, vote, voted_out, nullified, tie, tribe, tribe_status, castaway_id, vote_id"},
+  {name:"jury_votes",desc:"Final tribal council votes",rows:"1,602",cols:"season, castaway, finalist, vote, castaway_id, finalist_id"},
+  {name:"confessionals",desc:"Confessional counts per episode",rows:"13,560",cols:"season, episode, castaway, castaway_id, confessional_count, confessional_time"},
+  {name:"challenge_results",desc:"Every challenge result",rows:"21,349",cols:"season, episode, castaway, challenge_type, result, tribe, outcome_type"},
+  {name:"tribe_mapping",desc:"Tribe assignments per episode",rows:"14,976",cols:"season, episode, castaway, tribe, tribe_status, castaway_id"},
+];
+
+const MODULES=[
+{id:1,title:"SELECT — Your First Query",
+ intro:"You're about to learn the most fundamental SQL command. SELECT is the foundation of every query — it's how you tell the database exactly what you want to see.",
+ concept:{text:"SELECT lets you choose which columns to see. FROM tells SQL which table to look in.",code:"SELECT column1, column2\nFROM table_name;",tip:"Use SELECT * to grab all columns — handy for exploring, but avoid in production."},
+ scenarios:[
+  {id:"1.1",title:"Explore the Data",question:"Write a query to see everything in the season_summary table.",hint:'SELECT * means "give me all columns."',answer:"SELECT *\nFROM season_summary;",tables:["season_summary"],keywords:["SELECT","*","FROM","season_summary"]},
+  {id:"1.2",title:"Pick Your Columns",question:"Show every season's name, location, and winner from season_summary.",hint:"List column names after SELECT, separated by commas.",answer:"SELECT season_name, location, winner\nFROM season_summary;",tables:["season_summary"],keywords:["SELECT","season_name","location","winner","FROM","season_summary"]},
+  {id:"1.3",title:"Castaway Roster",question:"Show each castaway's name, city, and placement from the castaways table.",hint:"The columns are castaway, city, and place.",answer:"SELECT castaway, city, place\nFROM castaways;",tables:["castaways"],keywords:["SELECT","castaway","city","place","FROM","castaways"]},
+ ],
+ bonus:[
+  {id:"1.B1",title:"Full Player Details",question:"Show the full_name, gender, and personality_type from castaway_details.",hint:"Same pattern: SELECT columns FROM table.",answer:"SELECT full_name, gender, personality_type\nFROM castaway_details;",tables:["castaway_details"],keywords:["SELECT","full_name","gender","personality_type","FROM","castaway_details"]},
+  {id:"1.B2",title:"Episode Titles",question:"Show every episode's season, title, and IMDB rating from the episodes table.",hint:"The columns are season, episode_title, and imdb_rating.",answer:"SELECT season, episode_title, imdb_rating\nFROM episodes;",tables:["episodes"],keywords:["SELECT","season","episode_title","imdb_rating","FROM","episodes"]},
+ ]},
+{id:2,title:"WHERE — Filtering Results",
+ intro:"Now you'll learn to filter. WHERE is your scalpel — it lets you slice through thousands of rows to find exactly what you're looking for.",
+ concept:{text:"WHERE filters rows based on conditions. Use =, !=, <, >, and combine with AND / OR.",code:"SELECT columns\nFROM table\nWHERE condition;",tip:"Text values need single quotes: WHERE country = 'Fiji'"},
+ scenarios:[
+  {id:"2.1",title:"Fiji Seasons",question:"Find the season name and location for all seasons filmed in Fiji.",hint:"WHERE country = 'Fiji'. Text needs quotes.",answer:"SELECT season_name, location\nFROM season_summary\nWHERE country = 'Fiji';",tables:["season_summary"],keywords:["SELECT","FROM","season_summary","WHERE","country","=","Fiji"]},
+  {id:"2.2",title:"Sole Survivors",question:"Find all castaways who won (result = 'Sole Survivor'). Show name, season, city.",hint:"WHERE result = 'Sole Survivor'",answer:"SELECT castaway, season, city\nFROM castaways\nWHERE result = 'Sole Survivor';",tables:["castaways"],keywords:["SELECT","FROM","castaways","WHERE","result","=","Sole Survivor"]},
+  {id:"2.3",title:"Top-Rated Episodes",question:"Find season 47 episodes with IMDB rating above 7.5. Show title and rating.",hint:"Two conditions — connect with AND.",answer:"SELECT episode_title, imdb_rating\nFROM episodes\nWHERE season = 47\n  AND imdb_rating > 7.5;",tables:["episodes"],keywords:["SELECT","FROM","episodes","WHERE","season","47","AND","imdb_rating",">","7.5"]},
+  {id:"2.4",title:"Chaos at Tribal",question:"Find season 49 votes that were nullified OR were ties.",hint:"Use OR. Wrap OR conditions in parentheses.",answer:"SELECT castaway, vote, nullified, tie\nFROM vote_history\nWHERE season = 49\n  AND (nullified = 1 OR tie = 1);",tables:["vote_history"],keywords:["SELECT","FROM","vote_history","WHERE","season","49","AND","OR","nullified","tie"]},
+ ],
+ bonus:[
+  {id:"2.B1",title:"Big Casts Only",question:"Find seasons with more than 18 cast members. Show name and cast size.",hint:"WHERE n_cast > 18",answer:"SELECT season_name, n_cast\nFROM season_summary\nWHERE n_cast > 18;",tables:["season_summary"],keywords:["SELECT","FROM","season_summary","WHERE","n_cast",">","18"]},
+  {id:"2.B2",title:"INTJ Players",question:"Find all INTJ personality type players. Show their full name.",hint:"WHERE personality_type = 'INTJ'",answer:"SELECT full_name, personality_type\nFROM castaway_details\nWHERE personality_type = 'INTJ';",tables:["castaway_details"],keywords:["SELECT","FROM","castaway_details","WHERE","personality_type","=","INTJ"]},
+ ]},
+{id:3,title:"ORDER BY & LIMIT",
+ intro:"Time to sort and rank! These are the commands that answer every 'top 10' and 'best of' question.",
+ concept:{text:"ORDER BY sorts results. DESC = highest first. LIMIT caps rows returned.",code:"SELECT columns\nFROM table\nORDER BY column DESC\nLIMIT 10;",tip:"ORDER BY after WHERE, LIMIT last."},
+ scenarios:[
+  {id:"3.1",title:"Best Episodes",question:"10 highest-rated episodes. Show season, title, IMDB rating.",hint:"ORDER BY imdb_rating DESC LIMIT 10.",answer:"SELECT season, episode_title, imdb_rating\nFROM episodes\nORDER BY imdb_rating DESC\nLIMIT 10;",tables:["episodes"],keywords:["SELECT","FROM","episodes","ORDER BY","imdb_rating","DESC","LIMIT","10"]},
+  {id:"3.2",title:"Biggest Casts",question:"Which 5 seasons had the largest cast? Show name and count.",hint:"ORDER BY n_cast DESC LIMIT 5.",answer:"SELECT season_name, n_cast\nFROM season_summary\nORDER BY n_cast DESC\nLIMIT 5;",tables:["season_summary"],keywords:["SELECT","FROM","season_summary","ORDER BY","n_cast","DESC","LIMIT","5"]},
+  {id:"3.3",title:"Most-Watched",question:"10 most-watched episodes. Show season, title, viewers.",hint:"ORDER BY viewers DESC.",answer:"SELECT season, episode_title, viewers\nFROM episodes\nORDER BY viewers DESC\nLIMIT 10;",tables:["episodes"],keywords:["SELECT","FROM","episodes","ORDER BY","viewers","DESC","LIMIT","10"]},
+ ],
+ bonus:[
+  {id:"3.B1",title:"Lowest Rated",question:"Find the 5 lowest-rated episodes (ASC). Show season and title.",hint:"ORDER BY imdb_rating ASC (or just omit DESC).",answer:"SELECT season, episode_title, imdb_rating\nFROM episodes\nORDER BY imdb_rating ASC\nLIMIT 5;",tables:["episodes"],keywords:["SELECT","FROM","episodes","ORDER BY","imdb_rating","ASC","LIMIT","5"]},
+ ]},
+{id:4,title:"Aggregate Functions",
+ intro:"Get ready to crunch numbers! Aggregates let you count, sum, and average across entire tables.",
+ concept:{text:"COUNT() counts, SUM() adds, AVG() averages, MIN()/MAX() find extremes.",code:"SELECT COUNT(*) AS total\nFROM table_name;",tip:"AS creates a readable alias for calculated columns."},
+ scenarios:[
+  {id:"4.1",title:"Total Votes",question:"How many total votes across all tribal councils?",hint:"COUNT(*) on vote_history.",answer:"SELECT COUNT(*) AS total_votes\nFROM vote_history;",tables:["vote_history"],keywords:["SELECT","COUNT","AS","FROM","vote_history"]},
+  {id:"4.2",title:"Average Rating",question:"Average IMDB rating across all episodes?",hint:"AVG(imdb_rating).",answer:"SELECT AVG(imdb_rating) AS avg_rating\nFROM episodes;",tables:["episodes"],keywords:["SELECT","AVG","imdb_rating","AS","FROM","episodes"]},
+  {id:"4.3",title:"Peak & Valley",question:"Highest and lowest viewership for any single episode?",hint:"MAX() and MIN() in same SELECT.",answer:"SELECT MAX(viewers) AS peak_viewers,\n  MIN(viewers) AS lowest_viewers\nFROM episodes;",tables:["episodes"],keywords:["SELECT","MAX","MIN","viewers","AS","FROM","episodes"]},
+ ],
+ bonus:[
+  {id:"4.B1",title:"Total Confessionals",question:"What's the total number of confessionals across all seasons? (SUM confessional_count)",hint:"SUM(confessional_count) from confessionals.",answer:"SELECT SUM(confessional_count) AS total_confessionals\nFROM confessionals;",tables:["confessionals"],keywords:["SELECT","SUM","confessional_count","AS","FROM","confessionals"]},
+ ]},
+{id:5,title:"GROUP BY — Summarize",
+ intro:"This is where SQL gets really powerful. GROUP BY lets you summarize data by category — like building a pivot table with one line.",
+ concept:{text:"GROUP BY splits data into groups. HAVING filters groups after aggregation.",code:"SELECT category, COUNT(*)\nFROM table\nGROUP BY category\nHAVING COUNT(*) > 5;",tip:"If it's in SELECT but not aggregated, it must be in GROUP BY."},
+ scenarios:[
+  {id:"5.1",title:"Episodes Per Season",question:"Episode count per season, sorted by season.",hint:"GROUP BY season, COUNT(*).",answer:"SELECT season, COUNT(*) AS episode_count\nFROM episodes\nGROUP BY season\nORDER BY season;",tables:["episodes"],keywords:["SELECT","COUNT","AS","FROM","episodes","GROUP BY","season","ORDER BY"]},
+  {id:"5.2",title:"Confessional Kings",question:"Top 5 castaways by total confessionals in season 49.",hint:"SUM, GROUP BY castaway, ORDER, LIMIT.",answer:"SELECT castaway,\n  SUM(confessional_count) AS total_confessionals\nFROM confessionals\nWHERE season = 49\nGROUP BY castaway\nORDER BY total_confessionals DESC\nLIMIT 5;",tables:["confessionals"],keywords:["SELECT","SUM","confessional_count","AS","FROM","confessionals","WHERE","season","49","GROUP BY","castaway","ORDER BY","DESC","LIMIT","5"]},
+  {id:"5.3",title:"Elite Seasons",question:"Seasons with average IMDB above 7.0. Show season and avg rating.",hint:"Use HAVING, not WHERE, for aggregates.",answer:"SELECT season, AVG(imdb_rating) AS avg_rating\nFROM episodes\nGROUP BY season\nHAVING AVG(imdb_rating) > 7.0\nORDER BY avg_rating DESC;",tables:["episodes"],keywords:["SELECT","AVG","imdb_rating","AS","FROM","episodes","GROUP BY","season","HAVING","ORDER BY","DESC"]},
+  {id:"5.4",title:"Returning Players",question:"Find players who appeared more than once. Show name and count.",hint:"HAVING COUNT(*) > 1.",answer:"SELECT castaway, COUNT(*) AS times_played\nFROM castaways\nGROUP BY castaway\nHAVING COUNT(*) > 1\nORDER BY times_played DESC;",tables:["castaways"],keywords:["SELECT","COUNT","AS","FROM","castaways","GROUP BY","castaway","HAVING","ORDER BY","DESC"]},
+ ],
+ bonus:[
+  {id:"5.B1",title:"Votes Per Tribal",question:"Average number of votes cast per episode across all seasons.",hint:"COUNT votes GROUP BY season and episode, then AVG that.",answer:"SELECT AVG(vote_count) AS avg_votes_per_tribal\nFROM (\n  SELECT season, episode, COUNT(*) AS vote_count\n  FROM vote_history\n  GROUP BY season, episode\n);",tables:["vote_history"],keywords:["SELECT","AVG","COUNT","AS","FROM","vote_history","GROUP BY","season","episode"]},
+ ]},
+{id:6,title:"JOIN — Combining Tables",
+ intro:"Up to now you've worked with one table at a time. JOIN is how you connect tables together — like linking spreadsheet tabs.",
+ concept:{text:"INNER JOIN returns matching rows. LEFT JOIN keeps all left rows, NULLs for no match.",code:"SELECT a.col, b.col\nFROM table_a AS a\nINNER JOIN table_b AS b\n  ON a.id = b.id;",tip:"AS creates short aliases for table names."},
+ scenarios:[
+  {id:"6.1",title:"Player Profiles",question:"Show castaway name, season, gender, and personality type. Join castaways + castaway_details.",hint:"JOIN on castaway_id.",answer:"SELECT c.castaway, c.season, d.gender, d.personality_type\nFROM castaways AS c\nINNER JOIN castaway_details AS d\n  ON c.castaway_id = d.castaway_id;",tables:["castaways","castaway_details"],keywords:["SELECT","FROM","castaways","AS","INNER JOIN","castaway_details","ON","castaway_id"]},
+  {id:"6.2",title:"Winner Demographics",question:"Show season name, winner, and winner's gender.",hint:"JOIN season_summary to castaway_details on winner_id.",answer:"SELECT s.season_name, s.winner, d.gender\nFROM season_summary AS s\nINNER JOIN castaway_details AS d\n  ON s.winner_id = d.castaway_id;",tables:["season_summary","castaway_details"],keywords:["SELECT","FROM","season_summary","AS","INNER JOIN","castaway_details","ON","winner_id","castaway_id"]},
+  {id:"6.3",title:"Airtime vs Placement",question:"Season 48: each castaway's total confessionals and final placement.",hint:"Join confessionals + castaways on castaway_id AND season.",answer:"SELECT c.castaway, ca.place,\n  SUM(c.confessional_count) AS total_conf\nFROM confessionals AS c\nINNER JOIN castaways AS ca\n  ON c.castaway_id = ca.castaway_id\n  AND c.season = ca.season\nWHERE c.season = 48\nGROUP BY c.castaway, ca.place\nORDER BY ca.place;",tables:["confessionals","castaways"],keywords:["SELECT","SUM","FROM","confessionals","AS","INNER JOIN","castaways","ON","castaway_id","season","WHERE","48","GROUP BY","ORDER BY"]},
+ ],
+ bonus:[
+  {id:"6.B1",title:"Tribe Colors",question:"Show each castaway's name and their original tribe for season 47. Join castaways with tribe_mapping.",hint:"Join on castaway_id and season. Filter tribe_status = 'Original'.",answer:"SELECT c.castaway, t.tribe\nFROM castaways AS c\nINNER JOIN tribe_mapping AS t\n  ON c.castaway_id = t.castaway_id\n  AND c.season = t.season\nWHERE c.season = 47\n  AND t.tribe_status = 'Original';",tables:["castaways","tribe_mapping"],keywords:["SELECT","FROM","castaways","AS","INNER JOIN","tribe_mapping","ON","castaway_id","season","WHERE","47","tribe_status","Original"]},
+ ]},
+{id:7,title:"Subqueries",
+ intro:"Queries inside queries — this is where things get creative. Subqueries let you answer complex questions in a single statement.",
+ concept:{text:"A subquery runs first, feeding results to the outer query.",code:"SELECT *\nFROM table\nWHERE col = (\n  SELECT MAX(col) FROM table\n);",tip:"Use IN when a subquery returns multiple rows."},
+ scenarios:[
+  {id:"7.1",title:"Best Episode",question:"Which episode has the highest IMDB rating? Show season, title, rating.",hint:"Subquery for MAX(imdb_rating).",answer:"SELECT season, episode_title, imdb_rating\nFROM episodes\nWHERE imdb_rating = (\n  SELECT MAX(imdb_rating) FROM episodes\n);",tables:["episodes"],keywords:["SELECT","FROM","episodes","WHERE","imdb_rating","=","MAX"]},
+  {id:"7.2",title:"Beyond Fiji",question:"Find castaways who played in non-Fiji seasons.",hint:"Subquery finds non-Fiji seasons, outer uses IN.",answer:"SELECT castaway, season\nFROM castaways\nWHERE season IN (\n  SELECT season FROM season_summary\n  WHERE country != 'Fiji'\n);",tables:["castaways","season_summary"],keywords:["SELECT","FROM","castaways","WHERE","season","IN","season_summary","country","Fiji"]},
+  {id:"7.3",title:"Confessional Champs",question:"Per season, who got the most confessionals?",hint:"RANK() OVER (PARTITION BY season).",answer:"SELECT season, castaway, total_conf\nFROM (\n  SELECT season, castaway,\n    SUM(confessional_count) AS total_conf,\n    RANK() OVER (PARTITION BY season\n      ORDER BY SUM(confessional_count) DESC) AS rnk\n  FROM confessionals\n  GROUP BY season, castaway\n) ranked\nWHERE rnk = 1\nORDER BY season;",tables:["confessionals"],keywords:["SELECT","FROM","confessionals","SUM","confessional_count","AS","RANK","OVER","PARTITION BY","season","ORDER BY","GROUP BY","WHERE","rnk","1"]},
+ ],bonus:[]},
+{id:8,title:"Window Functions",
+ intro:"The most powerful tool in your SQL belt. Window functions calculate across rows without collapsing them — think of it as GROUP BY that keeps all your rows.",
+ concept:{text:"RANK(), ROW_NUMBER(), running totals — calculated across related rows.",code:"RANK() OVER (\n  PARTITION BY season\n  ORDER BY score DESC\n)",tip:"PARTITION BY creates groups within the window."},
+ scenarios:[
+  {id:"8.1",title:"Rank Within Season",question:"Rank episodes within each season by IMDB rating (best=1).",hint:"RANK() PARTITION BY season ORDER BY imdb_rating DESC.",answer:"SELECT season, episode_title, imdb_rating,\n  RANK() OVER (PARTITION BY season\n    ORDER BY imdb_rating DESC) AS season_rank\nFROM episodes\nORDER BY season, season_rank;",tables:["episodes"],keywords:["SELECT","RANK","OVER","PARTITION BY","season","ORDER BY","imdb_rating","DESC","AS","FROM","episodes"]},
+  {id:"8.2",title:"Running Confessionals",question:"Season 49: running confessional total per castaway, episode by episode.",hint:"SUM() OVER (PARTITION BY castaway ORDER BY episode).",answer:"SELECT castaway, episode, confessional_count,\n  SUM(confessional_count) OVER (\n    PARTITION BY castaway ORDER BY episode\n  ) AS running_total\nFROM confessionals\nWHERE season = 49\nORDER BY castaway, episode;",tables:["confessionals"],keywords:["SELECT","SUM","confessional_count","OVER","PARTITION BY","castaway","ORDER BY","episode","AS","FROM","confessionals","WHERE","season","49"]},
+  {id:"8.3",title:"Season vs Series",question:"Compare each season's avg viewership to the overall series average.",hint:"AVG() as both aggregate and window function.",answer:"SELECT season,\n  AVG(viewers) AS season_avg,\n  AVG(AVG(viewers)) OVER () AS series_avg,\n  AVG(viewers) - AVG(AVG(viewers)) OVER () AS vs_series_avg\nFROM episodes\nGROUP BY season\nORDER BY vs_series_avg DESC;",tables:["episodes"],keywords:["SELECT","AVG","viewers","AS","OVER","FROM","episodes","GROUP BY","season","ORDER BY","DESC"]},
+ ],bonus:[]},
+{id:9,title:"CASE & Strings",
+ intro:"Time to add logic and text manipulation to your queries. CASE WHEN is SQL's IF statement, and string functions help you search and transform text.",
+ concept:{text:"CASE WHEN = conditional logic. LIKE + % = pattern matching.",code:"CASE\n  WHEN score >= 90 THEN 'Excellent'\n  ELSE 'Needs Work'\nEND AS grade",tip:"LIKE uses % as wildcard: '%Rob%' matches anything containing Rob."},
+ scenarios:[
+  {id:"9.1",title:"Rating Tiers",question:"Categorize episodes: 'Hit' (≥8), 'Solid' (≥7), 'Meh' (<7). Count each.",hint:"CASE WHEN in SELECT, GROUP BY the category.",answer:"SELECT\n  CASE\n    WHEN imdb_rating >= 8 THEN 'Hit'\n    WHEN imdb_rating >= 7 THEN 'Solid'\n    ELSE 'Meh'\n  END AS rating_tier,\n  COUNT(*) AS episode_count\nFROM episodes\nGROUP BY rating_tier\nORDER BY episode_count DESC;",tables:["episodes"],keywords:["SELECT","CASE","WHEN","THEN","ELSE","END","AS","COUNT","FROM","episodes","GROUP BY","ORDER BY","DESC"]},
+  {id:"9.2",title:"Idol Episodes",question:"Episodes with 'Idol' in the title (case-insensitive).",hint:"UPPER() + LIKE '%IDOL%'.",answer:"SELECT season, episode_title, imdb_rating\nFROM episodes\nWHERE UPPER(episode_title) LIKE '%IDOL%';",tables:["episodes"],keywords:["SELECT","FROM","episodes","WHERE","UPPER","episode_title","LIKE","IDOL"]},
+  {id:"9.3",title:"Loyalty Score",question:"Season 47: what % of each castaway's votes matched who was voted out? Top 10.",hint:"CASE WHEN vote = voted_out THEN 1 ELSE 0 inside SUM.",answer:"SELECT castaway,\n  COUNT(*) AS total_votes,\n  SUM(CASE WHEN vote = voted_out THEN 1 ELSE 0 END) AS correct,\n  ROUND(100.0 * SUM(CASE WHEN vote = voted_out\n    THEN 1 ELSE 0 END) / COUNT(*), 1) AS loyalty_pct\nFROM vote_history\nWHERE season = 47\nGROUP BY castaway\nORDER BY loyalty_pct DESC\nLIMIT 10;",tables:["vote_history"],keywords:["SELECT","COUNT","SUM","CASE","WHEN","THEN","ELSE","END","AS","ROUND","FROM","vote_history","WHERE","season","47","GROUP BY","ORDER BY","DESC","LIMIT","10"]},
+ ],bonus:[]},
+{id:10,title:"Capstone Challenges",
+ intro:"This is it — Final Tribal Council. These challenges combine every concept. They're designed to feel like real analytical questions you'd tackle on the job.",
+ concept:{text:"CTEs (WITH...AS) break complex queries into readable, named steps.",code:"WITH cte AS (\n  SELECT ... FROM ...\n)\nSELECT * FROM cte;",tip:"Think of each CTE as a temporary table that only exists for your query."},
+ scenarios:[
+  {id:"10.1",title:"The Edit Bay",question:'Season 48 "confessional equity": each player\'s total confessionals, placement, and share vs equal share.',hint:"CTEs for totals. Compare player % to equal %.",answer:"WITH season_totals AS (\n  SELECT castaway, castaway_id,\n    SUM(confessional_count) AS player_total\n  FROM confessionals WHERE season = 48\n  GROUP BY castaway, castaway_id\n),\nseason_agg AS (\n  SELECT SUM(player_total) AS grand_total,\n    COUNT(*) AS n_players\n  FROM season_totals\n)\nSELECT st.castaway, ca.place, st.player_total,\n  ROUND(100.0*st.player_total/sa.grand_total,1) AS actual_share,\n  ROUND(100.0/sa.n_players,1) AS equal_share\nFROM season_totals st\nCROSS JOIN season_agg sa\nINNER JOIN castaways ca\n  ON st.castaway_id = ca.castaway_id AND ca.season = 48\nORDER BY actual_share DESC;",tables:["confessionals","castaways"],keywords:["WITH","AS","SELECT","SUM","confessional_count","FROM","confessionals","WHERE","season","48","GROUP BY","COUNT","ROUND","CROSS JOIN","INNER JOIN","castaways","ON","castaway_id","ORDER BY","DESC"]},
+  {id:"10.2",title:"Tribal Chaos",question:"Most chaotic tribals — most spread-out votes. Show season, episode, tribe, distinct targets, who was voted out.",hint:"COUNT(DISTINCT vote).",answer:"SELECT season, episode, tribe,\n  COUNT(DISTINCT vote) AS vote_targets, voted_out\nFROM vote_history\nWHERE vote != ''\nGROUP BY season, episode, tribe, voted_out\nORDER BY vote_targets DESC\nLIMIT 15;",tables:["vote_history"],keywords:["SELECT","COUNT","DISTINCT","vote","AS","FROM","vote_history","WHERE","GROUP BY","season","episode","tribe","voted_out","ORDER BY","DESC","LIMIT","15"]},
+  {id:"10.3",title:"The Winner's Edit",question:"Do winners get more confessionals than average? Compare each winner's total to season average.",hint:"Join season_summary with confessionals subquery.",answer:"WITH player_totals AS (\n  SELECT season, castaway_id, castaway,\n    SUM(confessional_count) AS total\n  FROM confessionals\n  GROUP BY season, castaway_id, castaway\n),\nseason_avgs AS (\n  SELECT season, AVG(total) AS avg_total\n  FROM player_totals GROUP BY season\n)\nSELECT s.season, s.winner,\n  pt.total AS winner_total,\n  ROUND(sa.avg_total,1) AS season_avg,\n  CASE WHEN pt.total > sa.avg_total THEN 'Above' ELSE 'Below' END AS status\nFROM season_summary s\nINNER JOIN player_totals pt\n  ON s.winner_id = pt.castaway_id AND s.season = pt.season\nINNER JOIN season_avgs sa ON s.season = sa.season\nORDER BY s.season;",tables:["season_summary","confessionals"],keywords:["WITH","AS","SELECT","SUM","confessional_count","FROM","confessionals","GROUP BY","AVG","ROUND","CASE","WHEN","THEN","ELSE","END","season_summary","INNER JOIN","ON","winner_id","castaway_id","ORDER BY"]},
+ ],bonus:[]},
+];
+
+const CHEAT=[["SELECT","Choose columns","SELECT castaway, season"],["FROM","Specify table","FROM castaways"],["WHERE","Filter rows","WHERE season = 47"],["AND / OR","Combine conditions","WHERE s=47 AND place=1"],["ORDER BY","Sort results","ORDER BY rating DESC"],["LIMIT","Cap rows","LIMIT 10"],["COUNT(*)","Count rows","SELECT COUNT(*)"],["SUM(col)","Add values","SUM(confessional_count)"],["AVG(col)","Mean","AVG(imdb_rating)"],["GROUP BY","Summarize","GROUP BY season"],["HAVING","Filter groups","HAVING COUNT(*)>5"],["JOIN...ON","Combine tables","JOIN d ON a.id=b.id"],["CASE WHEN","Conditional","CASE WHEN x>5 THEN 'High'"],["LIKE","Pattern match","WHERE name LIKE '%Rob%'"],["RANK() OVER","Window rank","RANK() OVER (ORDER BY x)"],["AS","Rename column","COUNT(*) AS total"]];
+
+// ===== STATE =====
+let completed = JSON.parse(localStorage.getItem('ssq_done')||'{}');
+let userQueries = JSON.parse(localStorage.getItem('ssq_queries')||'{}');
+let wrongAttempts = JSON.parse(localStorage.getItem('ssq_wrong')||'{}');
+let currentModule = null;
+let apiKey = localStorage.getItem('ssq_apikey')||'';
+const aiChats = {};
+
+function save(){localStorage.setItem('ssq_done',JSON.stringify(completed));localStorage.setItem('ssq_queries',JSON.stringify(userQueries));localStorage.setItem('ssq_wrong',JSON.stringify(wrongAttempts));updateGlobal();}
+function saveQ(k,v){userQueries[k]=v;localStorage.setItem('ssq_queries',JSON.stringify(userQueries));}
+
+// ===== GLOBALS =====
+function totalScenarios(){let t=0;MODULES.forEach(m=>{t+=m.scenarios.length;t+=(m.bonus||[]).length;});return t;}
+function totalDone(){return Object.values(completed).filter(Boolean).length;}
+function updateGlobal(){
+  const t=totalScenarios(),d=totalDone();
+  document.getElementById('globalFill').style.width=(t?Math.round(d/t*100):0)+'%';
+  document.getElementById('globalCount').textContent=d+'/'+t;
+  document.getElementById('subtitleText').textContent=`${MODULES.length} modules, ${t} scenarios. Click 🤖 Ask AI Tutor on any scenario for help.`;
+  renderTorches();
+}
+function modDone(mod){return mod.scenarios.every(s=>completed[mod.id+'-'+s.id]);}
+function modProg(mod){let d=0;mod.scenarios.forEach(s=>{if(completed[mod.id+'-'+s.id])d++;});(mod.bonus||[]).forEach(s=>{if(completed[mod.id+'-'+s.id])d++;});return d;}
+function modTotal(mod){return mod.scenarios.length+(mod.bonus||[]).length;}
+
+// ===== TORCH TRACKER =====
+function renderTorches(){
+  const c=document.getElementById('torchTracker');
+  c.innerHTML=MODULES.map(m=>{
+    const done=modDone(m);
+    const active=currentModule===m.id;
+    return `<div class="torch-item" onclick="openModule(${m.id})" title="Module ${m.id}: ${m.title}">
+      <span class="torch-flame ${done?'lit':''} ${active?'active':''}">${ICONS[m.id-1]}</span>
+      <span class="torch-num mono ${done?'lit':''} ${active?'active':''}">${m.id}</span>
+    </div>`;
+  }).join('');
+}
+
+// ===== SYNTAX =====
+function highlightSQL(code){
+  return code.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+    .replace(/\b(SELECT|FROM|WHERE|AND|OR|ORDER BY|LIMIT|GROUP BY|HAVING|INNER JOIN|LEFT JOIN|CROSS JOIN|JOIN|ON|AS|CASE|WHEN|THEN|ELSE|END|IN|NOT|LIKE|DESC|ASC|WITH|PARTITION BY|OVER|RANK|SUM|COUNT|AVG|MAX|MIN|ROUND|DISTINCT|UNION)\b/gi,'<span class="kw">$1</span>')
+    .replace(/'[^']*'/g,'<span class="str">$&</span>')
+    .replace(/--.*$/gm,'<span class="cmt">$&</span>');
+}
+function codeBlockHTML(code,id){return `<div class="code-block"><button class="copy-btn" onclick="copyCode('${id}')">Copy</button><pre id="${id}">${highlightSQL(code)}</pre></div>`;}
+function copyCode(id){const el=document.getElementById(id);navigator.clipboard.writeText(el.textContent).then(()=>{const b=el.parentElement.querySelector('.copy-btn');b.textContent='✓';b.classList.add('copied');setTimeout(()=>{b.textContent='Copy';b.classList.remove('copied');},1500);});}
+function escapeHTML(s){return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\n/g,'<br>');}
+
+// ===== QUERY CHECKING =====
+function normalizeSQL(s){return s.replace(/--.*$/gm,'').replace(/\s+/g,' ').replace(/[;\s]+$/,'').trim().toUpperCase();}
+
+function checkQuery(key, modId, scenarioId) {
+  const mod = MODULES.find(m=>m.id===modId);
+  const allS = [...mod.scenarios,...(mod.bonus||[])];
+  const scenario = allS.find(s=>s.id===scenarioId);
+  const userSQL = (document.getElementById('editor-'+key)?.value||'').trim();
+  const fb = document.getElementById('feedback-'+key);
+  if (!userSQL) { fb.innerHTML='<div class="feedback-box incorrect">Write a query first!</div>'; fb.classList.remove('hidden'); return; }
+
+  const normUser = normalizeSQL(userSQL);
+  const normAnswer = normalizeSQL(scenario.answer);
+  const keywords = scenario.keywords || [];
+
+  if (normUser === normAnswer) {
+    fb.innerHTML='<div class="feedback-box correct">🎉 <strong>Correct!</strong> Your query matches perfectly. The tribe approves!</div>';
+    fb.classList.remove('hidden');
+    completed[key]=true; save();
+    if(currentModule) refreshModuleView();
+    return;
+  }
+
+  // Check keywords
+  let found=[], missing=[];
+  keywords.forEach(kw => {
+    if (normUser.includes(kw.toUpperCase())) found.push(kw);
+    else missing.push(kw);
+  });
+  const pct = keywords.length ? Math.round(found.length/keywords.length*100) : 0;
+
+  let html = '<div class="feedback-box incorrect">';
+  if (pct >= 80) html += `<strong>So close!</strong> You've got ${pct}% of the key elements right.`;
+  else if (pct >= 50) html += `<strong>Getting there!</strong> ${pct}% of key elements found.`;
+  else html += `<strong>Keep going!</strong> Only ${pct}% of key elements found so far.`;
+
+  if (found.length) html += `<div style="margin-top:8px"><strong style="color:#2e6b47">✓ You got right:</strong> ${found.map(k=>`<span class="fb-line fb-right">${k}</span>`).join(' ')}</div>`;
+  if (missing.length) html += `<div style="margin-top:6px"><strong style="color:#c0392b">✗ Still needed:</strong> ${missing.map(k=>`<span class="fb-line fb-missing">${k}</span>`).join(' ')}</div>`;
+  html += '</div>';
+  fb.innerHTML = html;
+  fb.classList.remove('hidden');
+
+  // Track wrong attempts
+  wrongAttempts[key] = (wrongAttempts[key]||0)+1;
+  save();
+
+  // If 3+ wrong attempts, offer extra practice
+  if (wrongAttempts[key] >= 3 && !document.getElementById('extra-practice-'+key)) {
+    const ep = document.createElement('div');
+    ep.id = 'extra-practice-'+key;
+    ep.style.cssText = 'margin-top:10px;padding:10px 14px;background:#fef0ee;border-radius:7px;border-left:3px solid #c0392b;font-size:13px;color:#7a1a1a';
+    ep.innerHTML = `<strong>Struggling?</strong> Try breaking it down: what table do you need? (FROM), what columns? (SELECT), what filter? (WHERE). The AI Tutor can walk you through it step by step — click 🤖 above!`;
+    fb.appendChild(ep);
+  }
+}
+
+// ===== MODALS =====
+function showModal(html){document.getElementById('modalContainer').innerHTML=html;}
+function hideModal(){document.getElementById('modalContainer').innerHTML='';}
+
+function showIntroModal(mod){
+  showModal(`<div class="modal-overlay" onclick="if(event.target===this)hideModal()"><div class="modal-box">
+    <div style="font-size:40px;margin-bottom:12px">${ICONS[mod.id-1]}</div>
+    <h3>"Wanna know what you're<br>playing for?"</h3>
+    <p style="font-size:13px;color:#8a7e70;margin-bottom:8px">MODULE ${mod.id} — ${MOD_ICONS_DESC[mod.id-1]}</p>
+    <p>${mod.intro}</p>
+    <button class="modal-btn" onclick="hideModal()">Let's play! 🔥</button>
+  </div></div>`);
+}
+
+function showTribeSpoken(mod){
+  const el=document.createElement('div');
+  el.className='tribe-spoken-overlay';
+  el.onclick=()=>el.remove();
+  el.innerHTML=`<div class="tribe-flame-row">🔥🔥🔥</div><div class="tribe-spoken-text">"The tribe has spoken."</div><div class="tribe-spoken-sub">Module ${mod.id} complete: ${mod.title}</div><div style="margin-top:24px;font-size:14px;color:#6a6258;cursor:pointer">Click anywhere to continue</div>`;
+  document.body.appendChild(el);
+  setTimeout(()=>{if(el.parentNode)el.remove();},5000);
+}
+
+function checkModuleStruggle(mod){
+  const wrongOnes=[];
+  mod.scenarios.forEach(s=>{
+    const k=mod.id+'-'+s.id;
+    if(!completed[k] && (wrongAttempts[k]||0)>=2) wrongOnes.push(s);
+  });
+  if(wrongOnes.length >= Math.ceil(mod.scenarios.length/2)){
+    showModal(`<div class="modal-overlay" onclick="if(event.target===this)hideModal()"><div class="modal-box">
+      <div style="font-size:36px;margin-bottom:10px">😔</div>
+      <h3>"Got nothing for ya."</h3>
+      <p>"Grab your stuff, head back to camp."<br><br>Let's revisit these scenarios:</p>
+      <ul class="wrong-list">${wrongOnes.map(s=>`<li>Scenario ${s.id}: ${s.title}</li>`).join('')}</ul>
+      <p style="font-size:13px">Try the hints and AI Tutor — you've got this!</p>
+      <button class="modal-btn" onclick="hideModal()">Back to camp 🏕️</button>
+    </div></div>`);
+  }
+}
+
+// ===== TABS =====
+function switchTab(t){
+  document.querySelectorAll('.nav-btn').forEach(b=>b.classList.toggle('active',b.dataset.tab===t));
+  ['lessons','tables','cheatsheet'].forEach(x=>document.getElementById('tab-'+x).classList.toggle('hidden',x!==t));
+  if(t!=='lessons')currentModule=null;
+  if(t==='lessons')renderModuleGrid();
+  renderTorches();window.scrollTo(0,0);
+}
+
+// ===== MODULE GRID =====
+function renderModuleGrid(){
+  document.getElementById('module-grid-view').classList.remove('hidden');
+  document.getElementById('module-detail-view').classList.add('hidden');
+  currentModule=null; renderTorches();
+  document.getElementById('moduleGrid').innerHTML=MODULES.map(mod=>{
+    const p=modProg(mod),t=modTotal(mod),d=modDone(mod),pct=Math.round(p/t*100);
+    return `<div class="module-card ${d?'done':''}" onclick="openModule(${mod.id})">
+      ${d?'<div class="badge mono">COMPLETE</div>':''}
+      <div class="icon">${ICONS[mod.id-1]}</div>
+      <div class="mod-label mono">MODULE ${mod.id} — ${MOD_ICONS_DESC[mod.id-1].toUpperCase()}</div>
+      <h3>${mod.title}</h3>
+      <div class="count">${t} scenarios</div>
+      <div class="progress-bar"><div class="progress-track"><div class="progress-fill" style="width:${pct}%"></div></div><span class="progress-count mono">${p}/${t}</span></div>
+    </div>`;
+  }).join('');
+}
+
+// ===== MODULE DETAIL =====
+function openModule(id){
+  const wasDone = modDone(MODULES.find(m=>m.id===id));
+  currentModule=id;
+  const mod=MODULES.find(m=>m.id===id);
+  if(!wasDone && !completed['intro-'+id]){
+    completed['intro-'+id]=true;
+    showIntroModal(mod);
+  }
+  refreshModuleView();
+}
+
+function refreshModuleView(){
+  const id=currentModule;
+  const mod=MODULES.find(m=>m.id===id);
+  document.getElementById('module-grid-view').classList.add('hidden');
+  const detail=document.getElementById('module-detail-view');
+  detail.classList.remove('hidden');
+  renderTorches();
+
+  const p=modProg(mod),t=modTotal(mod),pct=Math.round(p/t*100);
+  let html=`<button class="back-btn" onclick="renderModuleGrid()">← All Modules</button>`;
+  html+=`<div style="display:flex;align-items:center;gap:12px;margin-bottom:6px"><span style="font-size:34px">${ICONS[mod.id-1]}</span><div><span class="mod-label mono" style="font-size:11px;color:#d4611e;font-weight:700;letter-spacing:1px">MODULE ${mod.id} — ${MOD_ICONS_DESC[mod.id-1].toUpperCase()}</span><h2 style="margin:2px 0 0;font-size:22px">${mod.title}</h2></div></div>`;
+  html+=`<div style="margin-bottom:14px"><div class="progress-bar"><div class="progress-track"><div class="progress-fill" style="width:${pct}%"></div></div><span class="progress-count mono">${p}/${t}</span></div></div>`;
+  html+=`<div class="concept-box"><div class="label mono">CORE CONCEPT</div><p>${mod.concept.text}</p>${codeBlockHTML(mod.concept.code,'concept-'+mod.id)}<p class="tip">💡 ${mod.concept.tip}</p></div>`;
+
+  // Scenarios
+  const renderScenario = (s, isBonus) => {
+    const key=mod.id+'-'+s.id;
+    const isDone=!!completed[key];
+    const isWrong=!isDone&&(wrongAttempts[key]||0)>0;
+    const tags=(s.tables||[]).map(tn=>{const ti=TABLES_INFO.find(x=>x.name===tn);return `<span class="table-tag mono" title="${ti?ti.cols:''}">\u{1F4CB} ${tn}${ti?' ('+ti.rows+')':''}</span>`;}).join('');
+    return `<div class="scenario ${isDone?'done':''} ${isWrong?'wrong':''}" id="scenario-${key}">
+      <div class="scenario-top"><div><span class="s-label mono">${isBonus?'🗳️ EXTRA VOTE':'SCENARIO'} ${s.id}</span><h4>${s.title}</h4></div>
+        <button class="check-btn ${isDone?'done':''}" onclick="toggleDone('${key}')">${isDone?'✓':''}</button></div>
+      <p class="question">${s.question}</p>
+      <div class="table-tags">${tags}</div>
+      <div style="margin-bottom:10px"><div class="editor-label mono">Your Query</div>
+        <textarea class="sql-editor mono" id="editor-${key}" placeholder="Write your SQL here..." spellcheck="false" oninput="saveQ('${key}',this.value)">${userQueries[key]||''}</textarea></div>
+      <div class="toggle-row">
+        <button class="check-query-btn mono" onclick="checkQuery('${key}',${mod.id},'${s.id}')">⚡ Check Query</button>
+        <button class="hint-btn" onclick="togglePanel(this,'hint-${key}')">💡 Hint</button>
+        <button class="answer-btn" onclick="togglePanel(this,'answer-${key}')">✅ Answer</button>
+        <button class="ai-toggle" onclick="toggleAI('${key}')">🤖 AI Tutor</button>
+      </div>
+      <div id="feedback-${key}" class="hidden"></div>
+      <div id="hint-${key}" class="hidden"><div class="hint-box">💡 ${s.hint}</div></div>
+      <div id="answer-${key}" class="hidden"><div class="answer-header">ANSWER</div>${codeBlockHTML(s.answer,'code-'+key)}</div>
+      <div id="ai-${key}" class="hidden ai-section"><div class="ai-panel"><div class="ai-messages" id="ai-msgs-${key}"><div class="ai-msg system">Ask anything — I'll guide without spoiling.</div></div>
+        <div class="ai-input-row"><input class="ai-input" id="ai-input-${key}" placeholder="e.g. What does GROUP BY do here?" onkeydown="if(event.key==='Enter'){sendAI('${key}',${mod.id},'${s.id}');event.preventDefault()}">
+        <button class="ai-send mono" id="ai-send-${key}" onclick="sendAI('${key}',${mod.id},'${s.id}')">Send</button></div></div></div>
+    </div>`;
+  };
+
+  mod.scenarios.forEach(s=>{html+=renderScenario(s,false);});
+
+  if(mod.bonus&&mod.bonus.length){
+    html+=`<div class="bonus-section"><div class="bonus-title">🗳️ Cast an Extra Vote — Bonus Scenarios</div>`;
+    mod.bonus.forEach(s=>{html+=renderScenario(s,true);});
+    html+=`</div>`;
+  }
+
+  html+=`<div class="mod-nav">`;
+  if(id>1)html+=`<button class="prev" onclick="openModule(${id-1})">← Module ${id-1}</button>`;else html+=`<div></div>`;
+  if(id<MODULES.length)html+=`<button class="next" onclick="openModule(${id+1})">Module ${id+1} →</button>`;else html+=`<div></div>`;
+  html+=`</div>`;
+  detail.innerHTML=html;
+  window.scrollTo(0,0);
+
+  // Check if just completed
+  if(modDone(mod) && !completed['celebration-'+mod.id]){
+    completed['celebration-'+mod.id]=true;save();
+    setTimeout(()=>showTribeSpoken(mod),300);
+  }
+  // Check struggle
+  checkModuleStruggle(mod);
+}
+
+function toggleDone(key){
+  completed[key]=!completed[key];save();
+  if(currentModule)refreshModuleView();else renderModuleGrid();
+}
+function togglePanel(btn,id){const p=document.getElementById(id);const h=p.classList.contains('hidden');p.classList.toggle('hidden');btn.classList.toggle('open',h);}
+function toggleAI(key){
+  const p=document.getElementById('ai-'+key);p.classList.toggle('hidden');
+  const sc=p.closest('.scenario');if(sc){const b=sc.querySelector('.ai-toggle');if(b)b.classList.toggle('open',!p.classList.contains('hidden'));}
+  if(!p.classList.contains('hidden')&&!apiKey){const m=document.getElementById('ai-msgs-'+key);if(!m.querySelector('.ai-msg.error'))m.innerHTML+='<div class="ai-msg error">⚙️ Add your API key via the gear icon (⚙️) in the nav bar.</div>';}
+}
+
+// ===== API KEY =====
+document.getElementById('apiKeyInput').value=apiKey?'••••'+apiKey.slice(-4):'';
+function toggleApiBar(){document.getElementById('apiBar').classList.toggle('hidden');if(!document.getElementById('apiBar').classList.contains('hidden'))document.getElementById('apiKeyInput').value=apiKey||'';}
+function saveApiKey(){const v=document.getElementById('apiKeyInput').value.trim();if(v&&!v.startsWith('••')){apiKey=v;localStorage.setItem('ssq_apikey',apiKey);document.getElementById('apiKeyInput').value='••••'+apiKey.slice(-4);const st=document.getElementById('apiStatus');st.textContent='✓ Saved';setTimeout(()=>st.textContent='',2000);}}
+
+// ===== AI TUTOR =====
+function getSchema(tables){return tables.map(n=>{const t=TABLES_INFO.find(ti=>ti.name===n);return t?`${t.name} (${t.rows} rows): ${t.cols}`:n;}).join('\n');}
+
+async function sendAI(key,modId,scenarioId){
+  if(!apiKey){toggleApiBar();return;}
+  const mod=MODULES.find(m=>m.id===modId);
+  const allS=[...mod.scenarios,...(mod.bonus||[])];
+  const scenario=allS.find(s=>s.id===scenarioId);
+  const input=document.getElementById('ai-input-'+key);
+  const msgs=document.getElementById('ai-msgs-'+key);
+  const btn=document.getElementById('ai-send-'+key);
+  const userText=input.value.trim();if(!userText)return;
+  const userSQL=document.getElementById('editor-'+key)?.value||'';
+
+  if(!aiChats[key])aiChats[key]=[];
+  aiChats[key].push({role:'user',content:userText});
+  msgs.innerHTML+=`<div class="ai-msg user">${escapeHTML(userText)}</div>`;
+  input.value='';btn.disabled=true;btn.textContent='...';msgs.scrollTop=msgs.scrollHeight;
+
+  try{
+    const res=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json','x-api-key':apiKey,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},
+      body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:600,
+        system:`You're a friendly SQL tutor using Survivor data. SCENARIO ${scenario.id}: ${scenario.question}\n\nTABLES:\n${getSchema(scenario.tables||[])}\n\nCORRECT ANSWER (never reveal directly):\n${scenario.answer}\n\n${userSQL?"STUDENT'S ATTEMPT:\n"+userSQL:"No attempt yet."}\n\nRULES: Guide without giving the full answer. If they share a query, say what's right and pinpoint what to fix. Be concise (2-5 sentences), encouraging, and use Survivor references. Show small SQL fragments but not complete solutions.`,
+        messages:aiChats[key]})});
+    if(!res.ok){const e=await res.json().catch(()=>({}));throw new Error(e.error?.message||'API error '+res.status);}
+    const data=await res.json();
+    const reply=data.content.map(b=>b.text||'').join('');
+    aiChats[key].push({role:'assistant',content:reply});
+    msgs.innerHTML+=`<div class="ai-msg assistant">${escapeHTML(reply)}</div>`;
+  }catch(e){msgs.innerHTML+=`<div class="ai-msg error">⚠️ ${escapeHTML(e.message)}</div>`;aiChats[key].pop();}
+  btn.disabled=false;btn.textContent='Send';msgs.scrollTop=msgs.scrollHeight;
+}
+
+// ===== TABLES TAB =====
+document.getElementById('tablesContainer').innerHTML=TABLES_INFO.map(t=>`<div class="table-card"><div style="display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:6px;margin-bottom:5px"><span class="table-name mono">${t.name}</span><span class="table-rows mono">${t.rows} rows</span></div><p class="table-desc">${t.desc}</p><div class="table-cols mono">${t.cols}</div></div>`).join('');
+
+// ===== CHEAT SHEET =====
+let ch=`<div class="cheat-table"><div class="cheat-header"><span class="mono">KEYWORD</span><span class="mono">WHAT IT DOES</span><span class="mono">EXAMPLE</span></div>`;
+CHEAT.forEach(r=>{ch+=`<div class="cheat-row"><span class="cheat-kw mono">${r[0]}</span><span class="cheat-does">${r[1]}</span><span class="cheat-ex mono">${r[2]}</span></div>`;});
+ch+=`</div><div class="ops-box"><div class="ops-label mono">QUERY ORDER OF OPERATIONS</div><p>SQL clauses must appear in this order:</p><div class="ops-flow">`;
+["SELECT","FROM","JOIN","WHERE","GROUP BY","HAVING","ORDER BY","LIMIT"].forEach((k,i,a)=>{ch+=`<span class="ops-kw mono">${k}</span>`;if(i<a.length-1)ch+=`<span class="ops-arrow">→</span>`;});
+ch+=`</div></div>`;
+document.getElementById('cheatContainer').innerHTML=ch;
+
+// ===== INIT =====
+renderModuleGrid();updateGlobal();
+</script>
+</body>
+</html>

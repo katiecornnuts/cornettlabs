@@ -1,8 +1,11 @@
 export default function SQLSurvivor() {
   return (
-    <div style={{ padding: 24 }}>
-      <h1>SQL Survivor</h1>
-      <p>Welcome to SQLSurvivor.</p>
+    <div style={{ width: "100%", height: "100vh" }}>
+      <iframe
+        src="/sql-survivor.html"
+        title="SQL Survivor"
+        style={{ width: "100%", height: "100%", border: "none" }}
+      />
     </div>
   );
 }
