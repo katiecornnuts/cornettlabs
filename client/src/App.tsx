@@ -1,3 +1,4 @@
+import SQLSurvivor from "./SQLSurvivor";
 import { Switch, Route } from "wouter";
 import { queryClient } from "./lib/queryClient";
 import { QueryClientProvider } from "@tanstack/react-query";
@@ -12,6 +13,7 @@ function Router() {
     <Switch>
       <Route path="/" component={Home} />
       <Route path="/secret-projects" component={SecretProjects} />
+      <Route path="/SQLSurvivor" element={<SQLSurvivor />} />
       <Route component={NotFound} />
     </Switch>
   );
