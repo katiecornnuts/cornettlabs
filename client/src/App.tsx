@@ -7,6 +7,7 @@ import NotFound from "@/pages/not-found";
 import Home from "@/pages/home";
 import SecretProjects from "@/pages/secret-projects";
 import SQLSurvivor from "@/pages/sql-survivor";
+import StravaLabs from "@/pages/strava-labs";
 
 function Router() {
   return (
@@ -14,6 +15,7 @@ function Router() {
       <Route path="/" component={Home} />
       <Route path="/secret-projects" component={SecretProjects} />
       <Route path="/sql-survivor" component={SQLSurvivor} />
+      <Route path="/stravalabs" component={StravaLabs} />
       <Route component={NotFound} />
     </Switch>
   );

@@ -152,13 +152,13 @@ interface ProjectCardProps {
   category: string;
   description: string;
   link: string;
+  external?: boolean;
 }
 
-const ProjectCard = ({ title, category, description, link }: ProjectCardProps) => (
+const ProjectCard = ({ title, category, description, link, external = true }: ProjectCardProps) => (
   <motion.a
     href={link}
-    target="_blank"
-    rel="noopener noreferrer"
+    {...(external ? { target: "_blank", rel: "noopener noreferrer" } : {})}
     whileHover={{ y: -5 }}
     className="group relative block bg-white border-4 border-black p-6 hard-shadow-lg transition-all duration-200"
   >
@@ -226,10 +226,18 @@ const Hero = () => (
 const Projects = () => {
   const projects = [
     {
+      title: "Survivor SQL",
+      category: "Learning Tool",
+      description: "An interactive SQL learning game built around Survivor data. Work through 18 modules from basics to advanced analytics, with live query practice along the way.",
+      link: "/sql-survivor",
+      external: false,
+    },
+    {
       title: "Strava Labs",
       category: "Web App",
       description: "A framework pitch listening to the voices of the Strava community and giving athletes the PR they deserve.",
-      link: "https://stravalabs.com",
+      link: "/stravalabs",
+      external: false,
     },
   ];
 
@@ -250,7 +258,6 @@ const Projects = () => {
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
           {projects.map((p, i) => <ProjectCard key={i} {...p} />)}
-          <ComingSoonCard />
           <ComingSoonCard />
           <ComingSoonCard />
         </div>
