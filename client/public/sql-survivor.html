@@ -50,7 +50,7 @@ nav{background:var(--dark);border-bottom:1px solid #3a3228;position:sticky;top:0
 .api-bar .api-status{font-size:10px;color:#6a8a5a}
 
 main{max-width:1100px;margin:0 auto;padding:28px 24px}
-h2{font-size:24px;color:var(--dark);margin-bottom:6px}
+h2{font-size:24px;color:var(--torch);margin-bottom:6px}
 .subtitle{font-size:14px;color:#6a6258;line-height:1.6;margin-bottom:24px}
 
 /* Module Grid */
@@ -137,6 +137,31 @@ h2{font-size:24px;color:var(--dark);margin-bottom:6px}
 .bonus-section{margin-top:24px;padding:20px;background:#fef9f0;border:2px dashed #e0c97a;border-radius:12px}
 .bonus-title{font-size:14px;font-weight:700;color:#9a7b20;margin-bottom:12px;display:flex;align-items:center;gap:8px}
 
+/* Live Practice */
+.live-section{margin-top:28px;padding:20px;background:#050e07;border:2px solid #2e6b47;border-radius:12px}
+.live-title{font-size:14px;font-weight:700;color:#6ab57a;margin-bottom:14px;display:flex;align-items:center;gap:8px}
+.live-q{background:#0d1a10;border:1px solid #1e4a2a;border-radius:10px;padding:18px;margin-bottom:14px}
+.live-q:last-child{margin-bottom:0}
+.live-q-label{font-size:10px;font-weight:700;color:#6ab57a;letter-spacing:1px;margin-bottom:4px}
+.live-q-title{font-size:15px;font-weight:600;color:#e8dfd4;margin-bottom:8px}
+.live-challenge{font-size:14px;line-height:1.6;color:#b4c8b8;margin-bottom:12px}
+.live-editor{width:100%;min-height:70px;padding:10px 12px;font-size:12px;line-height:1.6;background:#060c08;border:1px solid #2a3d2e;border-radius:7px;resize:vertical;color:#e8dfd4;outline:none;font-family:'JetBrains Mono','Fira Code',monospace}
+.live-editor:focus{border-color:#6ab57a;box-shadow:0 0 0 3px rgba(106,181,122,.12)}
+.live-run-btn{padding:7px 18px;border-radius:6px;border:none;background:#2e6b47;color:#fff;font-size:12px;font-weight:700;cursor:pointer;letter-spacing:.5px;transition:background .2s;font-family:'JetBrains Mono',monospace}
+.live-run-btn:hover:not(:disabled){background:#1f5234}
+.live-run-btn:disabled{background:#142a1c;color:#4a7a5a;cursor:not-allowed}
+.live-results-box{margin-top:14px;background:#060c08;border:1px solid #1e3a24;border-radius:8px;overflow:hidden;display:none}
+.live-results-box.visible{display:block}
+.live-results-hdr{background:#0d1a10;padding:7px 14px;border-bottom:1px solid #1e3a24;display:flex;align-items:center;gap:8px}
+.live-results-lbl{font-size:10px;font-weight:700;color:#6ab57a;letter-spacing:1.5px}
+.live-results-ct{font-size:10px;color:#5a7a5a;background:#0a1a0c;padding:1px 7px;border-radius:8px}
+.live-results-ms{font-size:10px;color:#5a7a5a}
+.live-results-body{overflow-x:auto;max-height:280px;overflow-y:auto}
+.live-hint-btn{border:1px solid #6a5a20;background:transparent;color:#9a8a40;padding:5px 12px;border-radius:5px;font-size:12px;font-weight:600;cursor:pointer;transition:all .2s}
+.live-hint-btn.open{background:#1a1500;border-color:#9a8a40}
+.live-answer-btn{border:1px solid #2e6b47;background:transparent;color:#6ab57a;padding:5px 12px;border-radius:5px;font-size:12px;font-weight:600;cursor:pointer;transition:all .2s}
+.live-answer-btn.open{background:#0d1a10}
+
 /* Module nav */
 .mod-nav{display:flex;justify-content:space-between;margin-top:28px;padding-top:20px;border-top:1px solid var(--border)}
 .mod-nav button{padding:9px 18px;border-radius:7px;font-size:13px;cursor:pointer;font-family:inherit}
@@ -189,6 +214,22 @@ footer{text-align:center;padding:28px 24px;color:var(--gray);font-size:12px;bord
 .hidden{display:none}
 @media(max-width:600px){.header-inner{flex-direction:column;align-items:flex-start}.cheat-header,.cheat-row{grid-template-columns:90px 1fr 1fr}}
 
+/* ===== BLACK BACKGROUND + FLICKERING TORCHES ===== */
+html,body{background:#000 !important}
+header,nav,main,footer{position:relative;z-index:1}
+#bg-torches{position:fixed;inset:0;pointer-events:none;z-index:0;overflow:hidden}
+.bt-wrap{position:absolute;bottom:0;display:flex;flex-direction:column;align-items:center}
+.bt-flames{position:relative;width:44px;height:70px}
+.bt-glow{position:absolute;top:-10px;left:50%;transform:translateX(-50%);width:80px;height:80px;border-radius:50%;background:radial-gradient(ellipse at center,rgba(212,97,30,0.45) 0%,rgba(212,97,30,0.15) 40%,transparent 70%);animation:glowPulse var(--dur,1.8s) ease-in-out infinite alternate}
+.bt-f{position:absolute;bottom:0;border-radius:50% 50% 20% 20%;transform-origin:bottom center;animation:btFlame var(--dur,1.8s) ease-in-out infinite alternate}
+.bt-f1{left:10px;width:22px;height:50px;background:radial-gradient(ellipse at 50% 100%,#fff 0%,#ffe066 20%,#ff7c00 60%,transparent 100%);animation-duration:var(--dur)}
+.bt-f2{left:13px;width:16px;height:36px;background:radial-gradient(ellipse at 50% 100%,#fff 0%,#ffcc00 30%,#ff4400 75%,transparent 100%);animation-duration:calc(var(--dur)*0.75);animation-direction:alternate-reverse}
+.bt-f3{left:16px;width:11px;height:22px;background:radial-gradient(ellipse at 50% 100%,rgba(255,255,200,0.9) 0%,#ff6600 55%,transparent 100%);animation-duration:calc(var(--dur)*1.2)}
+@keyframes btFlame{0%{transform:scaleX(1) scaleY(1) rotate(-4deg);opacity:.85}25%{transform:scaleX(.88) scaleY(1.12) rotate(3deg);opacity:1}50%{transform:scaleX(1.1) scaleY(.93) rotate(-2deg);opacity:.88}75%{transform:scaleX(.93) scaleY(1.08) rotate(4deg);opacity:1}100%{transform:scaleX(1) scaleY(1) rotate(-3deg);opacity:.9}}
+@keyframes glowPulse{0%{opacity:.45;transform:translateX(-50%) scale(1)}100%{opacity:.85;transform:translateX(-50%) scale(1.35)}}
+.bt-head{width:28px;height:18px;background:linear-gradient(180deg,#8b5e1a,#5a3810);border-radius:5px 5px 3px 3px;border:1px solid #3a2408;box-shadow:0 0 8px rgba(212,97,30,0.4)}
+.bt-pole{width:9px;background:linear-gradient(180deg,#6b4510,#3a2408);border-radius:5px}
+
 /* ===== PLAYGROUND TAB ===== */
 #tab-playground{padding-top:4px}
 .pg-layout{display:grid;grid-template-columns:1fr;gap:16px}
@@ -214,24 +255,24 @@ footer{text-align:center;padding:28px 24px;color:var(--gray);font-size:12px;bord
 @keyframes spin{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
 .pg-loading-bar-track{width:260px;height:6px;background:#e0d8cc;border-radius:3px;margin:14px auto 0;overflow:hidden}
 .pg-loading-bar-fill{height:100%;background:linear-gradient(90deg,var(--torch),#e8943e);border-radius:3px;width:0%;transition:width .3s}
-.pg-table-list{background:var(--white);border:1px solid var(--border);border-radius:12px;padding:14px 16px}
-.pg-table-list-label{font-size:10px;font-weight:700;color:var(--gray);letter-spacing:1.5px;margin-bottom:10px}
-.pg-table-chip{display:inline-block;margin:3px 3px;padding:3px 9px;background:var(--page-bg);border:1px solid var(--border);border-radius:5px;font-size:11px;color:#6a6258;cursor:pointer;transition:all .2s;font-family:'JetBrains Mono',monospace}
-.pg-table-chip:hover{background:var(--sand);color:var(--dark);border-color:var(--torch)}
-.pg-results-panel{background:var(--white);border:1px solid var(--border);border-radius:12px;overflow:hidden}
-.pg-results-header{background:var(--light-bg);padding:9px 16px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px;flex-wrap:wrap}
-.pg-results-label{font-size:10px;font-weight:700;color:var(--gray);letter-spacing:1.5px}
-.pg-results-count{font-size:11px;color:var(--gray);background:var(--page-bg);padding:2px 8px;border-radius:10px}
-.pg-results-time{font-size:11px;color:var(--gray)}
-.pg-results-body{overflow-x:auto;max-height:420px;overflow-y:auto}
+.pg-table-list{background:#1a1612;border:1px solid #3a3228;border-radius:12px;padding:14px 16px}
+.pg-table-list-label{font-size:10px;font-weight:700;color:var(--torch);letter-spacing:1.5px;margin-bottom:10px}
+.pg-table-chip{display:inline-block;margin:3px 3px;padding:3px 9px;background:#2a2218;border:1px solid #4a4038;border-radius:5px;font-size:11px;color:#c4b8a8;cursor:pointer;transition:all .2s;font-family:'JetBrains Mono',monospace}
+.pg-table-chip:hover{background:#3a3228;color:var(--torch);border-color:var(--torch)}
+.pg-results-panel{background:#1a1612;border:1px solid #3a3228;border-radius:12px;overflow:hidden}
+.pg-results-header{background:#1a1612;padding:9px 16px;border-bottom:1px solid #3a3228;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.pg-results-label{font-size:10px;font-weight:700;color:var(--torch);letter-spacing:1.5px}
+.pg-results-count{font-size:11px;color:#8a7e70;background:#2a2218;padding:2px 8px;border-radius:10px}
+.pg-results-time{font-size:11px;color:#8a7e70}
+.pg-results-body{overflow-x:auto;max-height:420px;overflow-y:auto;background:#1a1612}
 .pg-table{width:100%;border-collapse:collapse;font-size:12px}
-.pg-table th{background:var(--dark);color:#c4b8a8;font-weight:700;font-size:10px;letter-spacing:.8px;padding:8px 12px;text-align:left;position:sticky;top:0;white-space:nowrap}
-.pg-table td{padding:7px 12px;border-bottom:1px solid #eee;color:var(--dark);white-space:nowrap;max-width:300px;overflow:hidden;text-overflow:ellipsis}
-.pg-table tr:nth-child(even) td{background:var(--light-bg)}
-.pg-table tr:hover td{background:var(--sand)}
-.pg-null-cell{color:#b0a898;font-style:italic;font-size:11px}
-.pg-error-box{padding:16px 20px;background:#fef0ee;border-left:4px solid #c0392b;margin:12px;border-radius:6px;font-family:'JetBrains Mono','Fira Code',monospace;font-size:12px;color:#7a1a1a;line-height:1.6;white-space:pre-wrap;word-break:break-word}
-.pg-placeholder{padding:40px 24px;text-align:center;color:#b0a898;font-size:14px}
+.pg-table th{background:#0e0c0a;color:var(--torch);font-weight:700;font-size:10px;letter-spacing:.8px;padding:8px 12px;text-align:left;position:sticky;top:0;white-space:nowrap;border-bottom:1px solid #3a3228}
+.pg-table td{padding:7px 12px;border-bottom:1px solid #2a2218;color:#c4b8a8;white-space:nowrap;max-width:300px;overflow:hidden;text-overflow:ellipsis}
+.pg-table tr:nth-child(even) td{background:#141210}
+.pg-table tr:hover td{background:#2a2218}
+.pg-null-cell{color:#5a5248;font-style:italic;font-size:11px}
+.pg-error-box{padding:16px 20px;background:#1a0c0c;border-left:4px solid #c0392b;margin:12px;border-radius:6px;font-family:'JetBrains Mono','Fira Code',monospace;font-size:12px;color:#e87878;line-height:1.6;white-space:pre-wrap;word-break:break-word}
+.pg-placeholder{padding:40px 24px;text-align:center;color:#5a5248;font-size:14px}
 
 /* Table detail modal */
 .pg-modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:2000;display:none;align-items:center;justify-content:center;animation:fadeIn .2s}
@@ -250,28 +291,38 @@ footer{text-align:center;padding:28px 24px;color:var(--gray);font-size:12px;bord
 .pg-modal-use-btn:hover{background:#c0551a}
 
 /* Query history */
-.pg-history-section{margin-top:20px;border:1px solid var(--border);border-radius:12px;overflow:hidden}
-.pg-history-toggle{width:100%;background:var(--light-bg);border:none;padding:11px 16px;display:flex;align-items:center;justify-content:space-between;cursor:pointer;text-align:left}
-.pg-history-toggle:hover{background:var(--sand)}
-.pg-history-label{font-size:10px;font-weight:700;color:var(--gray);letter-spacing:1.5px}
-.pg-history-caret{font-size:12px;color:var(--gray);transition:transform .2s}
+.pg-history-section{margin-top:20px;border:1px solid #3a3228;border-radius:12px;overflow:hidden}
+.pg-history-toggle{width:100%;background:#1a1612;border:none;padding:11px 16px;display:flex;align-items:center;justify-content:space-between;cursor:pointer;text-align:left}
+.pg-history-toggle:hover{background:#2a2218}
+.pg-history-label{font-size:10px;font-weight:700;color:var(--torch);letter-spacing:1.5px}
+.pg-history-caret{font-size:12px;color:#6a6258;transition:transform .2s}
 .pg-history-caret.open{transform:rotate(180deg)}
-.pg-history-body{display:none;max-height:340px;overflow-y:auto}
+.pg-history-body{display:none;max-height:340px;overflow-y:auto;background:#1a1612}
 .pg-history-body.open{display:block}
-.pg-history-empty{padding:24px;text-align:center;color:#b0a898;font-size:13px}
-.pg-history-item{padding:11px 16px;border-top:1px solid var(--border);display:grid;grid-template-columns:auto 1fr auto;gap:10px;align-items:start;cursor:pointer;transition:background .15s}
-.pg-history-item:hover{background:var(--light-bg)}
+.pg-history-empty{padding:24px;text-align:center;color:#5a5248;font-size:13px}
+.pg-history-item{padding:11px 16px;border-top:1px solid #2a2218;display:grid;grid-template-columns:auto 1fr auto;gap:10px;align-items:start;cursor:pointer;transition:background .15s;background:#1a1612}
+.pg-history-item:hover{background:#2a2218}
 .pg-history-item:first-child{border-top:none}
-.pg-history-time{font-size:10px;color:var(--gray);font-family:'JetBrains Mono',monospace;white-space:nowrap;padding-top:2px}
-.pg-history-summary{font-size:13px;color:var(--dark);line-height:1.4}
-.pg-history-sql{font-size:10px;color:#8a7e70;font-family:'JetBrains Mono',monospace;margin-top:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:500px}
-.pg-history-meta{font-size:10px;color:var(--gray);white-space:nowrap;text-align:right;padding-top:2px}
+.pg-history-time{font-size:10px;color:#6a6258;font-family:'JetBrains Mono',monospace;white-space:nowrap;padding-top:2px}
+.pg-history-summary{font-size:13px;color:#c4b8a8;line-height:1.4}
+.pg-history-sql{font-size:10px;color:#6a6258;font-family:'JetBrains Mono',monospace;margin-top:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:500px}
+.pg-history-meta{font-size:10px;color:#6a6258;white-space:nowrap;text-align:right;padding-top:2px}
 .pg-history-rerun{font-size:10px;color:var(--torch);font-weight:700;display:block;margin-top:3px}
-.pg-history-clear{font-size:11px;color:#8a7e70;background:none;border:1px solid var(--border);border-radius:5px;padding:3px 10px;cursor:pointer;margin-right:4px}
-.pg-history-clear:hover{color:#c0392b;border-color:#c0392b}
+.pg-history-clear{font-size:11px;color:#6a6258;background:#2a2218;border:1px solid #4a4038;border-radius:5px;padding:6px 16px;cursor:pointer;margin:0 12px}
+.pg-history-clear:hover{color:#e87878;border-color:#c0392b;background:#2a1a1a}
 </style>
 </head>
 <body>
+<!-- Flickering background torches -->
+<div id="bg-torches" aria-hidden="true">
+  <div class="bt-wrap" style="left:1.5%;--dur:1.9s"><div class="bt-flames"><div class="bt-glow"></div><div class="bt-f bt-f1"></div><div class="bt-f bt-f2"></div><div class="bt-f bt-f3"></div></div><div class="bt-head"></div><div class="bt-pole" style="height:200px"></div></div>
+  <div class="bt-wrap" style="left:9%;--dur:2.3s"><div class="bt-flames"><div class="bt-glow"></div><div class="bt-f bt-f1"></div><div class="bt-f bt-f2"></div><div class="bt-f bt-f3"></div></div><div class="bt-head"></div><div class="bt-pole" style="height:130px"></div></div>
+  <div class="bt-wrap" style="left:18%;--dur:1.7s"><div class="bt-flames"><div class="bt-glow"></div><div class="bt-f bt-f1"></div><div class="bt-f bt-f2"></div><div class="bt-f bt-f3"></div></div><div class="bt-head"></div><div class="bt-pole" style="height:80px"></div></div>
+  <div class="bt-wrap" style="left:50%;transform:translateX(-50%);--dur:2.0s"><div class="bt-flames"><div class="bt-glow"></div><div class="bt-f bt-f1"></div><div class="bt-f bt-f2"></div><div class="bt-f bt-f3"></div></div><div class="bt-head"></div><div class="bt-pole" style="height:60px"></div></div>
+  <div class="bt-wrap" style="right:18%;--dur:1.6s"><div class="bt-flames"><div class="bt-glow"></div><div class="bt-f bt-f1"></div><div class="bt-f bt-f2"></div><div class="bt-f bt-f3"></div></div><div class="bt-head"></div><div class="bt-pole" style="height:90px"></div></div>
+  <div class="bt-wrap" style="right:9%;--dur:2.5s"><div class="bt-flames"><div class="bt-glow"></div><div class="bt-f bt-f1"></div><div class="bt-f bt-f2"></div><div class="bt-f bt-f3"></div></div><div class="bt-head"></div><div class="bt-pole" style="height:150px"></div></div>
+  <div class="bt-wrap" style="right:1.5%;--dur:1.8s"><div class="bt-flames"><div class="bt-glow"></div><div class="bt-f bt-f1"></div><div class="bt-f bt-f2"></div><div class="bt-f bt-f3"></div></div><div class="bt-head"></div><div class="bt-pole" style="height:210px"></div></div>
+</div>
 <header>
   <div class="header-inner">
     <div><div class="header-label mono">Learn SQL with</div><div class="header-title" style="font-family:'Survivant',Georgia,serif">SURVIVOR</div></div>
@@ -350,10 +401,7 @@ footer{text-align:center;padding:28px 24px;color:var(--gray);font-size:12px;bord
         <div class="pg-history-section">
           <button class="pg-history-toggle" onclick="pgToggleHistory()">
             <span class="pg-history-label mono">▸ QUERY HISTORY</span>
-            <div style="display:flex;align-items:center;gap:8px">
-              <button class="pg-history-clear" onclick="pgClearHistory(event)">Clear all</button>
-              <span class="pg-history-caret" id="pg-history-caret">▾</span>
-            </div>
+            <span class="pg-history-caret" id="pg-history-caret">▾</span>
           </button>
           <div class="pg-history-body" id="pg-history-body">
             <div class="pg-history-empty" id="pg-history-empty">No queries run yet. Run your first query above!</div>
@@ -381,8 +429,8 @@ footer{text-align:center;padding:28px 24px;color:var(--gray);font-size:12px;bord
 
 <script>
 // ===== DATA =====
-const ICONS = ['🔥','🏝️','🧭','🗳️','📦','🔗','🪆','🌊','🎯','🏆'];
-const MOD_ICONS_DESC = ['The Torch','Island Life','Navigation','Tribal Council','Supply Crate','The Alliance','Hidden Idol','Ocean Challenge','Target Practice','The Crown'];
+const ICONS = ['🔥','🏝️','🧭','🗳️','📦','🔗','🪆','🌊','🎯','🏆','🪣','🕯️','🗺️','🎬','🔬','📢','⛵','🧩'];
+const MOD_ICONS_DESC = ['The Torch','Island Life','Navigation','Tribal Council','Supply Crate','The Alliance','Hidden Idol','Ocean Challenge','Target Practice','The Crown','The Funnel','Snuffed Torch','The War Map','Director\'s Cut','The Lab','The Megaphone','The Vessel','The Puzzle'];
 const TABLES_INFO=[
   {name:"season_summary",desc:"One row per season",rows:"76",cols:"season, season_name, winner, location, n_cast, country, winner_id, n_tribes, n_finalists, n_jury, runner_ups, final_vote"},
   {name:"castaways",desc:"One row per castaway per season",rows:"1,418",cols:"castaway, castaway_id, season, age, city, state, result, place, original_tribe, jury, finalist, winner"},
@@ -498,9 +546,161 @@ const MODULES=[
   {id:"10.2",title:"Tribal Chaos",question:"Most chaotic tribals — most spread-out votes. Show season, episode, tribe, distinct targets, who was voted out.",hint:"COUNT(DISTINCT vote).",answer:"SELECT season, episode, tribe,\n  COUNT(DISTINCT vote) AS vote_targets, voted_out\nFROM vote_history\nWHERE vote != ''\nGROUP BY season, episode, tribe, voted_out\nORDER BY vote_targets DESC\nLIMIT 15;",tables:["vote_history"],keywords:["SELECT","COUNT","DISTINCT","vote","AS","FROM","vote_history","WHERE","GROUP BY","season","episode","tribe","voted_out","ORDER BY","DESC","LIMIT","15"]},
   {id:"10.3",title:"The Winner's Edit",question:"Do winners get more confessionals than average? Compare each winner's total to season average.",hint:"Join season_summary with confessionals subquery.",answer:"WITH player_totals AS (\n  SELECT season, castaway_id, castaway,\n    SUM(confessional_count) AS total\n  FROM confessionals\n  GROUP BY season, castaway_id, castaway\n),\nseason_avgs AS (\n  SELECT season, AVG(total) AS avg_total\n  FROM player_totals GROUP BY season\n)\nSELECT s.season, s.winner,\n  pt.total AS winner_total,\n  ROUND(sa.avg_total,1) AS season_avg,\n  CASE WHEN pt.total > sa.avg_total THEN 'Above' ELSE 'Below' END AS status\nFROM season_summary s\nINNER JOIN player_totals pt\n  ON s.winner_id = pt.castaway_id AND s.season = pt.season\nINNER JOIN season_avgs sa ON s.season = sa.season\nORDER BY s.season;",tables:["season_summary","confessionals"],keywords:["WITH","AS","SELECT","SUM","confessional_count","FROM","confessionals","GROUP BY","AVG","ROUND","CASE","WHEN","THEN","ELSE","END","season_summary","INNER JOIN","ON","winner_id","castaway_id","ORDER BY"]},
  ],bonus:[]},
+{id:11,title:"Usage Funnels",
+ intro:"Funnels reveal how users (or castaways!) move through a journey — and where they drop off. By tracking stage progression in SQL, you can pinpoint exactly where you're losing people.",
+ concept:{text:"A funnel counts how many users reach each stage. The drop-off between stages is your churn. Use CASE WHEN and CTEs to define stages, then COUNT to measure each step.",code:"WITH stages AS (\n  SELECT castaway,\n    CASE\n      WHEN place = 1  THEN 'Winner'\n      WHEN finalist = 1 THEN 'Finalist'\n      WHEN jury = 1   THEN 'Jury'\n      ELSE 'Pre-Jury'\n    END AS stage\n  FROM castaways WHERE season = 47\n)\nSELECT stage, COUNT(*) AS players\nFROM stages GROUP BY stage;",tip:"Funnel stages must be mutually exclusive. Order them from broadest (top) to narrowest (bottom) for a true funnel shape."},
+ scenarios:[
+  {id:"11.1",title:"Season 47 Game Funnel",question:"For season 47, count how many castaways reached each stage: 'Winner', 'Finalist', 'Jury', and 'Pre-Jury'. Show stage and player count, ordered by count ascending.",hint:"Use CASE WHEN with place, finalist, and jury columns. Winner = place 1, Finalist = finalist=1, Jury = jury=1, else Pre-Jury.",answer:"SELECT\n  CASE\n    WHEN place = 1 THEN 'Winner'\n    WHEN finalist = 1 THEN 'Finalist'\n    WHEN jury = 1 THEN 'Jury'\n    ELSE 'Pre-Jury'\n  END AS stage,\n  COUNT(*) AS players\nFROM castaways\nWHERE season = 47\nGROUP BY stage\nORDER BY players ASC;",tables:["castaways"],keywords:["SELECT","CASE","WHEN","place","1","THEN","Winner","finalist","Finalist","jury","Jury","ELSE","Pre-Jury","END","AS","COUNT","FROM","castaways","WHERE","season","47","GROUP BY","stage","ORDER BY","players","ASC"]},
+  {id:"11.2",title:"Funnel Conversion Rates",question:"Across all seasons, calculate: total cast, how many made jury, and the jury conversion rate (rounded to 1 decimal). Label columns clearly.",hint:"COUNT(*) for total, SUM(jury) for jury members, then ROUND(100.0*SUM(jury)/COUNT(*),1) for rate.",answer:"SELECT\n  COUNT(*) AS total_cast,\n  SUM(jury) AS made_jury,\n  ROUND(100.0 * SUM(jury) / COUNT(*), 1) AS jury_rate_pct\nFROM castaways;",tables:["castaways"],keywords:["SELECT","COUNT","SUM","jury","ROUND","100","FROM","castaways","total_cast","made_jury","jury_rate_pct"]},
+  {id:"11.3",title:"Multi-Season Funnel",question:"For each season, show total cast, number who made jury, number of finalists, and winners. Order by season.",hint:"SUM(jury), SUM(finalist), SUM(winner), COUNT(*) from castaways, GROUP BY season.",answer:"SELECT season,\n  COUNT(*) AS total_cast,\n  SUM(jury) AS jury_count,\n  SUM(finalist) AS finalist_count,\n  SUM(winner) AS winner_count\nFROM castaways\nGROUP BY season\nORDER BY season;",tables:["castaways"],keywords:["SELECT","season","COUNT","SUM","jury","finalist","winner","FROM","castaways","GROUP BY","ORDER BY"]},
+ ],
+ bonus:[
+  {id:"11.B1",title:"Funnel Drop-Off Rates",question:"Using a CTE, calculate per-season: cast size, jury rate (%), and finalist rate (%). Show seasons with the highest finalist rate first.",hint:"CTE for counts, then ROUND(100.0*jury_ct/cast_size,1) in outer query.",answer:"WITH funnel AS (\n  SELECT season,\n    COUNT(*) AS cast_size,\n    SUM(jury) AS jury_ct,\n    SUM(finalist) AS finalist_ct\n  FROM castaways\n  GROUP BY season\n)\nSELECT season, cast_size,\n  ROUND(100.0*jury_ct/cast_size,1) AS jury_rate,\n  ROUND(100.0*finalist_ct/cast_size,1) AS finalist_rate\nFROM funnel\nORDER BY finalist_rate DESC;",tables:["castaways"],keywords:["WITH","AS","SELECT","season","COUNT","SUM","jury","finalist","FROM","castaways","GROUP BY","ROUND","ORDER BY","DESC"]},
+ ]},
+{id:12,title:"User Churn Analysis",
+ intro:"Churn measures who drops off — and when. In product analytics, you track when users stop engaging. In Survivor, every vote-off is churn. SQL lets you calculate survival rates, identify high-churn episodes, and spot patterns.",
+ concept:{text:"Churn rate = users lost / users at start. Use COUNT, SUM with CASE WHEN, and window functions to track who 'churns' at each step.",code:"SELECT episode,\n  COUNT(DISTINCT voted_out) AS churned\nFROM vote_history\nWHERE season = 47\n  AND voted_out != ''\nGROUP BY episode\nORDER BY episode;",tip:"Survival rate = 1 - churn rate. If 18 start and 1 is eliminated ep 1, survival rate = 17/18 = 94.4%."},
+ scenarios:[
+  {id:"12.1",title:"Votes Per Episode",question:"How many players were voted out each episode of season 47? Show episode number and count, ordered by episode.",hint:"COUNT(DISTINCT voted_out) from vote_history, season=47, voted_out != '', GROUP BY episode.",answer:"SELECT episode,\n  COUNT(DISTINCT voted_out) AS players_voted_out\nFROM vote_history\nWHERE season = 47\n  AND voted_out != ''\nGROUP BY episode\nORDER BY episode;",tables:["vote_history"],keywords:["SELECT","episode","COUNT","DISTINCT","voted_out","FROM","vote_history","WHERE","season","47","AND","GROUP BY","ORDER BY"]},
+  {id:"12.2",title:"High-Churn Episodes",question:"Across all seasons, which 10 episodes had the most players voted out? Show season, episode, and churn count.",hint:"COUNT(DISTINCT voted_out) where voted_out != '', GROUP BY season AND episode, ORDER DESC LIMIT 10.",answer:"SELECT season, episode,\n  COUNT(DISTINCT voted_out) AS churned\nFROM vote_history\nWHERE voted_out != ''\nGROUP BY season, episode\nORDER BY churned DESC\nLIMIT 10;",tables:["vote_history"],keywords:["SELECT","season","episode","COUNT","DISTINCT","voted_out","churned","FROM","vote_history","WHERE","GROUP BY","ORDER BY","DESC","LIMIT","10"]},
+  {id:"12.3",title:"Churn Rate by Tribal",question:"For each season, what is the average number of players voted out per tribal council? Show season and avg_churn_per_tribal, rounded to 2 decimals. Order by highest churn first.",hint:"Use a subquery: inner counts churned per episode per season, outer averages those counts.",answer:"SELECT season,\n  ROUND(AVG(churned),2) AS avg_churn_per_tribal\nFROM (\n  SELECT season, episode,\n    COUNT(DISTINCT voted_out) AS churned\n  FROM vote_history\n  WHERE voted_out != ''\n  GROUP BY season, episode\n)\nGROUP BY season\nORDER BY avg_churn_per_tribal DESC;",tables:["vote_history"],keywords:["SELECT","season","ROUND","AVG","churned","COUNT","DISTINCT","voted_out","FROM","vote_history","WHERE","GROUP BY","episode","ORDER BY","DESC"]},
+ ],
+ bonus:[
+  {id:"12.B1",title:"Elimination Timing Stats",question:"What is the average and earliest episode number at which players are eliminated? Use distinct voted_out and episode pairs.",hint:"AVG(episode) and MIN(episode) from a subquery of DISTINCT voted_out, episode pairs where voted_out != ''.",answer:"SELECT\n  ROUND(AVG(episode),1) AS avg_elimination_episode,\n  MIN(episode) AS earliest_elimination,\n  MAX(episode) AS latest_elimination\nFROM (\n  SELECT DISTINCT voted_out, episode\n  FROM vote_history\n  WHERE voted_out != ''\n);",tables:["vote_history"],keywords:["SELECT","ROUND","AVG","episode","MIN","MAX","FROM","DISTINCT","voted_out","WHERE"]},
+ ]},
+{id:13,title:"Visualization, Communication & Experimental Design",
+ intro:"Great analysis means nothing if you can't communicate it. This module covers preparing SQL output for charts, writing queries that answer 'why' questions, and structuring data like a real A/B experiment.",
+ concept:{text:"Format data for charts with buckets and labels. Use CASE WHEN to bin values. Design experiments by clearly defining 'treatment' vs 'control' groups and comparing key metrics.",code:"-- Bucket ratings for a histogram\nSELECT\n  CASE\n    WHEN imdb_rating >= 9 THEN '9+'\n    WHEN imdb_rating >= 8 THEN '8-9'\n    WHEN imdb_rating >= 7 THEN '7-8'\n    ELSE 'Under 7'\n  END AS bucket,\n  COUNT(*) AS count\nFROM episodes\nGROUP BY bucket;",tip:"When preparing chart data, think: X axis = GROUP BY column, Y axis = aggregate value. Your query IS your chart query."},
+ scenarios:[
+  {id:"13.1",title:"Ratings Histogram (Bar Chart Data)",question:"Bucket episodes by IMDB rating: '9+', '8-8.9', '7-7.9', '6-6.9', 'Under 6'. Show bucket and count, ordered best-to-worst.",hint:"CASE WHEN on imdb_rating, GROUP BY the label, ORDER BY MIN(imdb_rating) DESC.",answer:"SELECT\n  CASE\n    WHEN imdb_rating >= 9 THEN '9+'\n    WHEN imdb_rating >= 8 THEN '8-8.9'\n    WHEN imdb_rating >= 7 THEN '7-7.9'\n    WHEN imdb_rating >= 6 THEN '6-6.9'\n    ELSE 'Under 6'\n  END AS rating_bucket,\n  COUNT(*) AS episode_count\nFROM episodes\nWHERE imdb_rating IS NOT NULL\nGROUP BY rating_bucket\nORDER BY MIN(imdb_rating) DESC;",tables:["episodes"],keywords:["SELECT","CASE","WHEN","imdb_rating","THEN","ELSE","END","AS","COUNT","FROM","episodes","WHERE","IS NOT NULL","GROUP BY","ORDER BY","MIN","DESC"]},
+  {id:"13.2",title:"Viewership Time Series (Line Chart Data)",question:"For seasons 40–49, show season, average viewers, and average IMDB rating per season. This is your line chart dataset. Order by season.",hint:"AVG(viewers), AVG(imdb_rating) WHERE season BETWEEN 40 AND 49, GROUP BY season.",answer:"SELECT season,\n  ROUND(AVG(viewers),2) AS avg_viewers,\n  ROUND(AVG(imdb_rating),2) AS avg_rating\nFROM episodes\nWHERE season BETWEEN 40 AND 49\nGROUP BY season\nORDER BY season;",tables:["episodes"],keywords:["SELECT","season","ROUND","AVG","viewers","imdb_rating","FROM","episodes","WHERE","BETWEEN","40","49","GROUP BY","ORDER BY"]},
+  {id:"13.3",title:"A/B Experiment — Location Effect",question:"Treat Fiji seasons as 'Fiji (Treatment)' and all others as 'Other (Control)'. Compare episode count, avg viewers, and avg IMDB rating for each group.",hint:"CASE WHEN country='Fiji' THEN... JOIN episodes to season_summary, GROUP BY experiment group.",answer:"SELECT\n  CASE WHEN s.country = 'Fiji' THEN 'Fiji (Treatment)'\n    ELSE 'Other (Control)' END AS experiment_group,\n  COUNT(e.episode) AS episode_count,\n  ROUND(AVG(e.viewers),2) AS avg_viewers,\n  ROUND(AVG(e.imdb_rating),2) AS avg_rating\nFROM episodes e\nINNER JOIN season_summary s ON e.season = s.season\nGROUP BY experiment_group;",tables:["episodes","season_summary"],keywords:["SELECT","CASE","WHEN","country","Fiji","THEN","ELSE","END","AS","COUNT","ROUND","AVG","viewers","imdb_rating","FROM","episodes","INNER JOIN","season_summary","ON","season","GROUP BY","experiment_group"]},
+ ],
+ bonus:[
+  {id:"13.B1",title:"Executive Summary Dashboard",question:"Write a single query producing a clean exec summary: total seasons, total episodes, peak viewership, best IMDB rating, avg rating, avg viewers. All labeled with clear aliases.",hint:"All aggregates in one SELECT from episodes — no GROUP BY needed. Use COUNT(DISTINCT season) for seasons.",answer:"SELECT\n  COUNT(DISTINCT season) AS total_seasons,\n  COUNT(*) AS total_episodes,\n  MAX(viewers) AS peak_viewers,\n  MAX(imdb_rating) AS best_rating,\n  ROUND(AVG(imdb_rating),2) AS avg_rating,\n  ROUND(AVG(viewers),2) AS avg_viewers\nFROM episodes;",tables:["episodes"],keywords:["SELECT","COUNT","DISTINCT","season","MAX","viewers","imdb_rating","ROUND","AVG","FROM","episodes"]},
+ ]},
+{id:14,title:"Marketing Attribution",
+ intro:"Marketing attribution answers: 'what drove this result?' When the Survivor franchise launches in a new location, introduces a twist, or brings back all-stars — does it move the needle? SQL can measure it.",
+ concept:{text:"Attribution compares a metric before vs after a change, or across treatment/control groups. LAG() lets you compare each season to the prior one to isolate the effect of changes.",code:"WITH avgs AS (\n  SELECT season, AVG(viewers) AS avg_v\n  FROM episodes GROUP BY season\n)\nSELECT season, avg_v,\n  LAG(avg_v) OVER (ORDER BY season) AS prior,\n  avg_v - LAG(avg_v) OVER\n    (ORDER BY season) AS lift\nFROM avgs;",tip:"Attribution requires a clear comparison group. Always ask: 'compared to what?' before drawing conclusions."},
+ scenarios:[
+  {id:"14.1",title:"Season-over-Season Viewership Change",question:"Using a CTE for average viewers per season, calculate each season's avg_viewers, prior season's avg (LAG), and viewership change. Show season, season_name, avg_viewers, prev_avg, and change. Order by season.",hint:"CTE from episodes for avg viewers, then LAG() in outer query, JOIN to season_summary for the name.",answer:"WITH season_avg AS (\n  SELECT season, ROUND(AVG(viewers),2) AS avg_viewers\n  FROM episodes\n  GROUP BY season\n)\nSELECT sa.season, s.season_name,\n  sa.avg_viewers,\n  LAG(sa.avg_viewers) OVER (ORDER BY sa.season) AS prev_avg,\n  ROUND(sa.avg_viewers - LAG(sa.avg_viewers) OVER (ORDER BY sa.season),2) AS viewership_change\nFROM season_avg sa\nINNER JOIN season_summary s ON sa.season = s.season\nORDER BY sa.season;",tables:["episodes","season_summary"],keywords:["WITH","AS","SELECT","season","ROUND","AVG","viewers","FROM","episodes","GROUP BY","LAG","OVER","ORDER BY","INNER JOIN","season_summary","ON","viewership_change"]},
+  {id:"14.2",title:"New Location Debut Impact",question:"Does a brand-new filming location get better viewership than repeat locations? Use ROW_NUMBER() to identify first vs. repeat visits per location. Show location, first-season avg viewers, repeat avg viewers.",hint:"ROW_NUMBER() OVER (PARTITION BY location ORDER BY season) = 1 means first visit. Join with episodes for viewers.",answer:"WITH loc_rank AS (\n  SELECT s.season, s.location, e.viewers,\n    ROW_NUMBER() OVER (PARTITION BY s.location ORDER BY s.season) AS visit_num\n  FROM season_summary s\n  INNER JOIN episodes e ON s.season = e.season\n)\nSELECT location,\n  ROUND(AVG(CASE WHEN visit_num = 1 THEN viewers END),2) AS first_season_avg,\n  ROUND(AVG(CASE WHEN visit_num > 1 THEN viewers END),2) AS repeat_avg\nFROM loc_rank\nGROUP BY location\nHAVING repeat_avg IS NOT NULL\nORDER BY first_season_avg DESC;",tables:["season_summary","episodes"],keywords:["WITH","AS","SELECT","season","location","viewers","ROW_NUMBER","OVER","PARTITION BY","ORDER BY","INNER JOIN","episodes","ON","ROUND","AVG","CASE","WHEN","visit_num","GROUP BY","HAVING","IS NOT NULL","DESC"]},
+  {id:"14.3",title:"Cast Size as Marketing Signal",question:"Larger casts often signal bigger marketing budgets. Do they drive more viewership? Bucket seasons by cast size: 'Small (≤15)', 'Medium (16-18)', 'Large (19+)'. Show group, episode count, and avg viewers.",hint:"CASE WHEN on n_cast from season_summary, JOIN episodes, GROUP BY cast_size_group.",answer:"SELECT\n  CASE\n    WHEN s.n_cast <= 15 THEN 'Small (≤15)'\n    WHEN s.n_cast <= 18 THEN 'Medium (16-18)'\n    ELSE 'Large (19+)'\n  END AS cast_size_group,\n  COUNT(e.episode) AS episodes,\n  ROUND(AVG(e.viewers),2) AS avg_viewers\nFROM season_summary s\nINNER JOIN episodes e ON s.season = e.season\nGROUP BY cast_size_group\nORDER BY avg_viewers DESC;",tables:["season_summary","episodes"],keywords:["SELECT","CASE","WHEN","n_cast","15","18","THEN","ELSE","END","AS","COUNT","ROUND","AVG","viewers","FROM","season_summary","INNER JOIN","episodes","ON","season","GROUP BY","ORDER BY","DESC"]},
+ ],
+ bonus:[
+  {id:"14.B1",title:"Premiere vs Finale Lift",question:"For each season, compare premiere (episode 1) viewership to the season's peak viewership. Show season, premiere_viewers, peak_viewers, and the lift (peak - premiere), ordered by biggest lift.",hint:"MAX(CASE WHEN episode=1 THEN viewers END) for premiere, MAX(viewers) for peak.",answer:"SELECT season,\n  MAX(CASE WHEN episode = 1 THEN viewers END) AS premiere_viewers,\n  MAX(viewers) AS peak_viewers,\n  MAX(viewers) - MAX(CASE WHEN episode = 1 THEN viewers END) AS lift\nFROM episodes\nGROUP BY season\nORDER BY lift DESC;",tables:["episodes"],keywords:["SELECT","season","MAX","CASE","WHEN","episode","1","THEN","viewers","END","AS","premiere_viewers","peak_viewers","lift","FROM","episodes","GROUP BY","ORDER BY","DESC"]},
+ ]},
+{id:15,title:"Coding Challenge — Data Scientist",
+ intro:"These are real-world style questions a data scientist might face in an interview or on the job. They test statistical reasoning, multi-step query writing, and the ability to communicate insights clearly.",
+ concept:{text:"Data scientists calculate distributions, build cohort analyses, and validate hypotheses. Master CTEs, window functions, and statistical aggregates (and know how to fake STDDEV when it's missing).",code:"-- Manual variance in SQLite\nSELECT\n  AVG(viewers) AS mean,\n  MAX(viewers) - MIN(viewers) AS range,\n  AVG(viewers*viewers)\n    - AVG(viewers)*AVG(viewers) AS variance\nFROM episodes;",tip:"When STDDEV() isn't available in SQLite, compute variance as AVG(x²) − AVG(x)². Square root is your standard deviation."},
+ scenarios:[
+  {id:"15.1",title:"Confessional-to-Placement Correlation",question:"For season 49, show each castaway's total confessionals and final placement. Order by placement. (The pattern you see is a real data science finding!)",hint:"SUM(confessional_count) from confessionals JOIN castaways on castaway_id AND season, WHERE season=49.",answer:"SELECT c.castaway,\n  SUM(cf.confessional_count) AS total_confessionals,\n  c.place\nFROM confessionals cf\nINNER JOIN castaways c\n  ON cf.castaway_id = c.castaway_id\n  AND cf.season = c.season\nWHERE cf.season = 49\nGROUP BY c.castaway, c.place\nORDER BY c.place;",tables:["confessionals","castaways"],keywords:["SELECT","castaway","SUM","confessional_count","AS","place","FROM","confessionals","INNER JOIN","castaways","ON","castaway_id","season","WHERE","49","GROUP BY","ORDER BY"]},
+  {id:"15.2",title:"Statistical Distribution of Ratings",question:"For all non-null IMDB ratings: compute total episode count, mean, min, max, and variance (AVG(x²) - AVG(x)², rounded to 3 decimals).",hint:"All aggregates in one SELECT. Variance = AVG(imdb_rating*imdb_rating) - AVG(imdb_rating)*AVG(imdb_rating).",answer:"SELECT\n  COUNT(*) AS total_episodes,\n  ROUND(AVG(imdb_rating),3) AS mean_rating,\n  MIN(imdb_rating) AS min_rating,\n  MAX(imdb_rating) AS max_rating,\n  ROUND(AVG(imdb_rating*imdb_rating) - AVG(imdb_rating)*AVG(imdb_rating),3) AS variance\nFROM episodes\nWHERE imdb_rating IS NOT NULL;",tables:["episodes"],keywords:["SELECT","COUNT","ROUND","AVG","imdb_rating","MIN","MAX","AS","FROM","episodes","WHERE","IS NOT NULL","variance"]},
+  {id:"15.3",title:"Era Cohort Analysis",question:"Segment seasons into eras: 'Classic (1-10)', 'Middle (11-20)', 'Evolved (21-30)', 'Modern (31-40)', 'New Era (41+)'. For each era show: season count, avg cast size, avg jury size, avg finalists.",hint:"CASE WHEN on season BETWEEN ranges in season_summary, GROUP BY era, ORDER BY MIN(season).",answer:"SELECT\n  CASE\n    WHEN season BETWEEN 1 AND 10 THEN 'Classic (1-10)'\n    WHEN season BETWEEN 11 AND 20 THEN 'Middle (11-20)'\n    WHEN season BETWEEN 21 AND 30 THEN 'Evolved (21-30)'\n    WHEN season BETWEEN 31 AND 40 THEN 'Modern (31-40)'\n    ELSE 'New Era (41+)'\n  END AS era,\n  COUNT(*) AS seasons,\n  ROUND(AVG(n_cast),1) AS avg_cast,\n  ROUND(AVG(n_jury),1) AS avg_jury,\n  ROUND(AVG(n_finalists),1) AS avg_finalists\nFROM season_summary\nGROUP BY era\nORDER BY MIN(season);",tables:["season_summary"],keywords:["SELECT","CASE","WHEN","season","BETWEEN","THEN","ELSE","END","AS","COUNT","ROUND","AVG","n_cast","n_jury","n_finalists","FROM","season_summary","GROUP BY","ORDER BY","MIN"]},
+ ],bonus:[]},
+{id:16,title:"Coding Challenge — Marketing",
+ intro:"Marketing analysts use SQL to measure campaign performance, track audience behavior, and optimize reach. These challenges mirror the types of questions you'd tackle in a marketing analytics role.",
+ concept:{text:"Key marketing metrics: reach (unique viewers), growth rate, retention (do audiences come back?), and lift (uplift vs baseline). SQL handles all of these with GROUP BY, LAG(), and conditional aggregation.",code:"-- Season-over-season growth %\nWITH avgs AS (\n  SELECT season, AVG(viewers) AS v\n  FROM episodes GROUP BY season\n)\nSELECT season, ROUND((v /\n  LAG(v) OVER (ORDER BY season)\n  - 1) * 100, 1) AS growth_pct\nFROM avgs;",tip:"Always express growth as a percentage for stakeholders. 'Up 2.3M viewers' is less intuitive than 'up 18% year-over-year'."},
+ scenarios:[
+  {id:"16.1",title:"Season Growth Rate",question:"Calculate avg viewership per season and the year-over-year growth % vs the prior season (rounded to 1 decimal). Show season, avg_viewers, and growth_pct. Order by season.",hint:"CTE for avg viewers per season, then LAG() and (current/prior - 1)*100 in the outer query.",answer:"WITH avgs AS (\n  SELECT season, ROUND(AVG(viewers),2) AS avg_viewers\n  FROM episodes GROUP BY season\n)\nSELECT season, avg_viewers,\n  ROUND((avg_viewers / LAG(avg_viewers) OVER (ORDER BY season) - 1)*100,1) AS growth_pct\nFROM avgs\nORDER BY season;",tables:["episodes"],keywords:["WITH","AS","SELECT","season","ROUND","AVG","viewers","FROM","episodes","GROUP BY","LAG","OVER","ORDER BY","growth_pct"]},
+  {id:"16.2",title:"Audience Retention Index",question:"For each season, calculate the retention index: finale proxy viewership (minimum non-premiere episode viewers) / premiere viewership, rounded to 2 decimals. A score >1 means finale beat the premiere.",hint:"MAX(CASE WHEN episode=1 THEN viewers END) for premiere. MIN(CASE WHEN episode>1 THEN viewers END) for finale proxy.",answer:"WITH ep_data AS (\n  SELECT season,\n    MAX(CASE WHEN episode = 1 THEN viewers END) AS premiere,\n    MIN(CASE WHEN episode > 1 THEN viewers END) AS finale_proxy\n  FROM episodes GROUP BY season\n)\nSELECT season, premiere, finale_proxy,\n  ROUND(CAST(finale_proxy AS FLOAT)/premiere,2) AS retention_index\nFROM ep_data\nWHERE premiere IS NOT NULL AND finale_proxy IS NOT NULL\nORDER BY retention_index DESC;",tables:["episodes"],keywords:["WITH","AS","SELECT","season","MAX","CASE","WHEN","episode","1","THEN","viewers","END","AS","MIN","FROM","episodes","GROUP BY","ROUND","CAST","FLOAT","WHERE","IS NOT NULL","ORDER BY","DESC"]},
+  {id:"16.3",title:"Top Performing Markets",question:"Identify the top 5 filming countries by average episode viewership. Show country, total episodes filmed there, and avg viewers.",hint:"JOIN season_summary with episodes on season, GROUP BY country, ORDER by avg viewers DESC, LIMIT 5.",answer:"SELECT s.country,\n  COUNT(e.episode) AS total_episodes,\n  ROUND(AVG(e.viewers),2) AS avg_viewers\nFROM season_summary s\nINNER JOIN episodes e ON s.season = e.season\nGROUP BY s.country\nORDER BY avg_viewers DESC\nLIMIT 5;",tables:["season_summary","episodes"],keywords:["SELECT","country","COUNT","episode","ROUND","AVG","viewers","FROM","season_summary","INNER JOIN","episodes","ON","season","GROUP BY","ORDER BY","DESC","LIMIT","5"]},
+ ],bonus:[]},
+{id:17,title:"Coding Challenge — Product Operations",
+ intro:"Product operations teams focus on efficiency, process health, and throughput metrics. These challenges test your ability to spot bottlenecks, measure operational performance, and build monitoring dashboards.",
+ concept:{text:"Ops metrics: throughput (output per unit time), efficiency (output/input ratio), and anomaly detection (outliers from normal). Use COUNT, SUM, and CASE WHEN flags to build health checks.",code:"-- Operational health check\nSELECT season, episode,\n  COUNT(*) AS votes,\n  SUM(tie) AS ties,\n  CASE WHEN SUM(tie)>0\n    THEN 'Flagged' ELSE 'OK'\n  END AS status\nFROM vote_history\nGROUP BY season, episode;",tip:"Operational dashboards need to be refreshable and scannable. Use consistent rounding, clear aliases, and sort by the most actionable metric."},
+ scenarios:[
+  {id:"17.1",title:"Tribal Throughput Metrics",question:"For each season, calculate: total tribal councils (distinct episodes with votes), total votes cast, and average votes per tribal (rounded to 1 decimal). Order by season.",hint:"COUNT(DISTINCT episode) for tribals, COUNT(*) for votes, divide for avg. All from vote_history.",answer:"SELECT season,\n  COUNT(DISTINCT episode) AS tribals,\n  COUNT(*) AS total_votes,\n  ROUND(CAST(COUNT(*) AS FLOAT)/COUNT(DISTINCT episode),1) AS avg_votes_per_tribal\nFROM vote_history\nGROUP BY season\nORDER BY season;",tables:["vote_history"],keywords:["SELECT","season","COUNT","DISTINCT","episode","tribals","total_votes","ROUND","CAST","FLOAT","FROM","vote_history","GROUP BY","ORDER BY"]},
+  {id:"17.2",title:"Content Production Rate",question:"For seasons 40–49, show season, episode count, total runtime (sum of episode_length), and avg episode length rounded to 1 decimal. Order by season.",hint:"COUNT, SUM, AVG on episode_length WHERE season BETWEEN 40 AND 49, GROUP BY season.",answer:"SELECT season,\n  COUNT(*) AS episode_count,\n  SUM(episode_length) AS total_runtime_mins,\n  ROUND(AVG(episode_length),1) AS avg_length\nFROM episodes\nWHERE season BETWEEN 40 AND 49\nGROUP BY season\nORDER BY season;",tables:["episodes"],keywords:["SELECT","season","COUNT","SUM","episode_length","ROUND","AVG","FROM","episodes","WHERE","BETWEEN","40","49","GROUP BY","ORDER BY"]},
+  {id:"17.3",title:"Chaos Detection — Tie Vote Flags",question:"Find all tribals where tie votes occurred. Show season, episode, total votes, tied vote count, tie %, and flag as 'High Chaos' if >30% were ties, else 'Normal'. Order by tie % descending.",hint:"SUM(tie) for tied votes, ROUND(100.0*SUM(tie)/COUNT(*),1) for pct, CASE WHEN pct>30 for flag.",answer:"SELECT season, episode,\n  COUNT(*) AS total_votes,\n  SUM(tie) AS tied_votes,\n  ROUND(100.0*SUM(tie)/COUNT(*),1) AS tie_pct,\n  CASE WHEN 100.0*SUM(tie)/COUNT(*) > 30\n    THEN 'High Chaos' ELSE 'Normal' END AS flag\nFROM vote_history\nGROUP BY season, episode\nHAVING SUM(tie) > 0\nORDER BY tie_pct DESC;",tables:["vote_history"],keywords:["SELECT","season","episode","COUNT","SUM","tie","ROUND","CASE","WHEN","THEN","High Chaos","ELSE","Normal","END","flag","FROM","vote_history","GROUP BY","HAVING","ORDER BY","DESC"]},
+ ],bonus:[]},
+{id:18,title:"Coding Challenge — Product Manager",
+ intro:"Product managers use data to understand users, prioritize features, and communicate impact to stakeholders. These challenges reflect the analytical questions PMs face daily — segmentation, journey mapping, and KPI dashboards.",
+ concept:{text:"PMs care about: who are your users (segmentation), what do they do (behavior), and are things improving (trends)? SQL helps you answer all three through GROUP BY, CASE WHEN, and time-series queries.",code:"-- User segmentation template\nSELECT\n  CASE\n    WHEN winner = 1 THEN 'Winner'\n    WHEN finalist = 1 THEN 'Runner-up'\n    WHEN jury = 1 THEN 'Jury'\n    ELSE 'Eliminated'\n  END AS segment,\n  COUNT(*), AVG(place)\nFROM castaways\nGROUP BY segment;",tip:"Frame every query around a user story: 'As a [user type], I [do X] in [context].' This clarifies what to SELECT, FROM, and WHERE."},
+ scenarios:[
+  {id:"18.1",title:"User Segmentation",question:"Segment all castaways into: 'Winner', 'Runner-up' (finalist but not winner), 'Jury Member', 'Eliminated'. Show each segment's player count and average placement, ordered by avg place.",hint:"CASE WHEN winner=1, finalist=1, jury=1, else Eliminated. GROUP BY segment, AVG(place).",answer:"SELECT\n  CASE\n    WHEN winner = 1 THEN 'Winner'\n    WHEN finalist = 1 THEN 'Runner-up'\n    WHEN jury = 1 THEN 'Jury Member'\n    ELSE 'Eliminated'\n  END AS segment,\n  COUNT(*) AS players,\n  ROUND(AVG(place),1) AS avg_place\nFROM castaways\nGROUP BY segment\nORDER BY avg_place;",tables:["castaways"],keywords:["SELECT","CASE","WHEN","winner","1","THEN","Winner","finalist","Runner-up","jury","Jury Member","ELSE","Eliminated","END","AS","COUNT","ROUND","AVG","place","FROM","castaways","GROUP BY","ORDER BY"]},
+  {id:"18.2",title:"Feature Adoption — Idol Episodes",question:"Do episodes with 'Idol' in the title get better IMDB ratings? Flag each episode (1=idol episode, 0=not), then show count and avg rating for each group.",hint:"CASE WHEN UPPER(episode_title) LIKE '%IDOL%' THEN 1 ELSE 0 END as flag, then GROUP BY it.",answer:"SELECT\n  CASE WHEN UPPER(episode_title) LIKE '%IDOL%'\n    THEN 1 ELSE 0 END AS idol_episode,\n  COUNT(*) AS episode_count,\n  ROUND(AVG(imdb_rating),2) AS avg_rating\nFROM episodes\nGROUP BY idol_episode;",tables:["episodes"],keywords:["SELECT","CASE","WHEN","UPPER","episode_title","LIKE","IDOL","THEN","1","ELSE","0","END","AS","idol_episode","COUNT","ROUND","AVG","imdb_rating","FROM","episodes","GROUP BY"]},
+  {id:"18.3",title:"PM KPI Dashboard",question:"Build a one-row executive KPI dashboard for the entire franchise: total seasons, total castaway appearances, unique players, total episodes, peak viewership, and best IMDB rating. Use subqueries and clear aliases.",hint:"Each metric is a subquery in the SELECT: (SELECT COUNT(DISTINCT season) FROM season_summary), etc.",answer:"SELECT\n  (SELECT COUNT(DISTINCT season) FROM season_summary) AS total_seasons,\n  (SELECT COUNT(*) FROM castaways) AS total_appearances,\n  (SELECT COUNT(*) FROM castaway_details) AS unique_players,\n  (SELECT COUNT(*) FROM episodes) AS total_episodes,\n  (SELECT MAX(viewers) FROM episodes) AS peak_viewers,\n  (SELECT MAX(imdb_rating) FROM episodes) AS best_rating;",tables:["season_summary","castaways","castaway_details","episodes"],keywords:["SELECT","COUNT","DISTINCT","season","season_summary","castaways","castaway_details","episodes","MAX","viewers","imdb_rating","AS"]},
+ ],bonus:[]},
 ];
 
 const CHEAT=[["SELECT","Choose columns","SELECT castaway, season"],["FROM","Specify table","FROM castaways"],["WHERE","Filter rows","WHERE season = 47"],["AND / OR","Combine conditions","WHERE s=47 AND place=1"],["ORDER BY","Sort results","ORDER BY rating DESC"],["LIMIT","Cap rows","LIMIT 10"],["COUNT(*)","Count rows","SELECT COUNT(*)"],["SUM(col)","Add values","SUM(confessional_count)"],["AVG(col)","Mean","AVG(imdb_rating)"],["GROUP BY","Summarize","GROUP BY season"],["HAVING","Filter groups","HAVING COUNT(*)>5"],["JOIN...ON","Combine tables","JOIN d ON a.id=b.id"],["CASE WHEN","Conditional","CASE WHEN x>5 THEN 'High'"],["LIKE","Pattern match","WHERE name LIKE '%Rob%'"],["RANK() OVER","Window rank","RANK() OVER (ORDER BY x)"],["AS","Rename column","COUNT(*) AS total"]];
+
+// ===== LIVE PRACTICE QUESTIONS =====
+const LIVE_QUESTIONS = {
+1:[
+ {id:'1.L1',title:'Explore All Seasons',compound:false,challenge:'Pull every season\'s name, location, country, and winner from <code>season_summary</code>. What pattern do you notice in the locations over time?',hint:'SELECT season_name, location, country, winner FROM season_summary — then add ORDER BY season.',answer:'SELECT season, season_name, location, country, winner\nFROM season_summary\nORDER BY season;'},
+ {id:'1.L2',title:'Castaway Profiles',compound:true,challenge:'Show the full_name, gender, occupation, and personality_type from <code>castaway_details</code>. What are the most common occupations? (Uses SELECT to explore a table you haven\'t seen yet.)',hint:'SELECT full_name, gender, occupation, personality_type FROM castaway_details — add LIMIT 50 to keep it manageable.',answer:'SELECT full_name, gender, occupation, personality_type\nFROM castaway_details\nLIMIT 50;'},
+],
+2:[
+ {id:'2.L1',title:'Older Castaways',compound:false,challenge:'Find all castaways who were 60 years old or older when they played. Show their name, age, season, and city.',hint:'WHERE age >= 60 from the castaways table.',answer:'SELECT castaway, age, season, city\nFROM castaways\nWHERE age >= 60\nORDER BY age DESC;'},
+ {id:'2.L2',title:'High-Rated Recent Episodes',compound:true,challenge:'Find all episodes from seasons 40 and later with an IMDB rating above 8.5. Show season, title, rating, and viewers. (Compound: WHERE with AND on two conditions.)',hint:'WHERE season >= 40 AND imdb_rating > 8.5 from the episodes table.',answer:'SELECT season, episode_title, imdb_rating, viewers\nFROM episodes\nWHERE season >= 40\n  AND imdb_rating > 8.5\nORDER BY imdb_rating DESC;'},
+],
+3:[
+ {id:'3.L1',title:'Most Watched Episodes Ever',compound:false,challenge:'What are the 10 most-watched episodes in Survivor history? Show season, title, and viewership.',hint:'ORDER BY viewers DESC LIMIT 10 from the episodes table.',answer:'SELECT season, episode_title, viewers\nFROM episodes\nORDER BY viewers DESC\nLIMIT 10;'},
+ {id:'3.L2',title:'Youngest Winners',compound:true,challenge:'Which winners were youngest when they played? Show their name, age, and season. Show the 5 youngest. (Compound: WHERE to filter winners, then ORDER + LIMIT.)',hint:'WHERE winner = 1, ORDER BY age ASC, LIMIT 5 from castaways.',answer:'SELECT castaway, age, season\nFROM castaways\nWHERE winner = 1\nORDER BY age ASC\nLIMIT 5;'},
+],
+4:[
+ {id:'4.L1',title:'Franchise Snapshot',compound:false,challenge:'Compute overall franchise stats in one query: total distinct seasons, total episodes, average IMDB rating, and average viewership — all from the <code>episodes</code> table.',hint:'COUNT(DISTINCT season), COUNT(*), AVG(imdb_rating), AVG(viewers) — all in one SELECT.',answer:'SELECT\n  COUNT(DISTINCT season) AS total_seasons,\n  COUNT(*) AS total_episodes,\n  ROUND(AVG(imdb_rating),2) AS avg_rating,\n  ROUND(AVG(viewers),2) AS avg_viewers\nFROM episodes;'},
+ {id:'4.L2',title:'Winner Age Stats',compound:true,challenge:'What are the age statistics for all Survivor winners? Find their average age, youngest, and oldest winner. (Compound: WHERE to isolate winners + aggregate functions.)',hint:'AVG(age), MIN(age), MAX(age) FROM castaways WHERE winner = 1.',answer:'SELECT\n  COUNT(*) AS total_winners,\n  ROUND(AVG(age),1) AS avg_age,\n  MIN(age) AS youngest,\n  MAX(age) AS oldest\nFROM castaways\nWHERE winner = 1;'},
+],
+5:[
+ {id:'5.L1',title:'Home States',compound:false,challenge:'Count how many castaways came from each US state. Show the top 15 states by player count.',hint:'GROUP BY state, COUNT(*), ORDER BY count DESC, LIMIT 15. Filter out nulls with WHERE state IS NOT NULL.',answer:'SELECT state, COUNT(*) AS players\nFROM castaways\nWHERE state IS NOT NULL AND state != \'\'\nGROUP BY state\nORDER BY players DESC\nLIMIT 15;'},
+ {id:'5.L2',title:'Multi-Season Players',compound:true,challenge:'Find every castaway who has played more than once. Show their name and how many seasons they\'ve played, from most to least. (Compound: GROUP BY + HAVING + ORDER BY.)',hint:'GROUP BY castaway, COUNT(*) AS times_played HAVING COUNT(*) > 1 ORDER BY times_played DESC.',answer:'SELECT castaway, COUNT(*) AS seasons_played\nFROM castaways\nGROUP BY castaway\nHAVING COUNT(*) > 1\nORDER BY seasons_played DESC;'},
+],
+6:[
+ {id:'6.L1',title:'Winner Demographics',compound:false,challenge:'Show every winner\'s full name, gender, and home state. Join <code>castaways</code> with <code>castaway_details</code> on castaway_id, filter to winner = 1.',hint:'JOIN castaways c with castaway_details cd ON c.castaway_id = cd.castaway_id WHERE c.winner = 1.',answer:'SELECT c.season, c.castaway, cd.full_name, cd.gender, c.state\nFROM castaways c\nINNER JOIN castaway_details cd ON c.castaway_id = cd.castaway_id\nWHERE c.winner = 1\nORDER BY c.season;'},
+ {id:'6.L2',title:'Well-Rated Seasons',compound:true,challenge:'For seasons with an average IMDB rating above 7, show the season name, winner, and average rating. (Compound: JOIN episodes + season_summary, GROUP BY, HAVING.)',hint:'JOIN season_summary with episodes on season. GROUP BY season. HAVING AVG(imdb_rating) > 7.',answer:'SELECT s.season, s.season_name, s.winner,\n  ROUND(AVG(e.imdb_rating),2) AS avg_rating\nFROM season_summary s\nINNER JOIN episodes e ON s.season = e.season\nGROUP BY s.season\nHAVING AVG(e.imdb_rating) > 7\nORDER BY avg_rating DESC;'},
+],
+7:[
+ {id:'7.L1',title:'Above-Average Episodes',compound:false,challenge:'Find all episodes that scored above the all-time average IMDB rating. Show season, title, and rating. How many are there?',hint:'WHERE imdb_rating > (SELECT AVG(imdb_rating) FROM episodes WHERE imdb_rating IS NOT NULL)',answer:'SELECT season, episode_title, imdb_rating\nFROM episodes\nWHERE imdb_rating > (\n  SELECT AVG(imdb_rating)\n  FROM episodes\n  WHERE imdb_rating IS NOT NULL\n)\nORDER BY imdb_rating DESC;'},
+ {id:'7.L2',title:'Over-Average Jury Recipients',compound:true,challenge:'Find finalists who received more jury votes than the average finalist. Show finalist name and vote count. (Compound: subquery for average + HAVING.)',hint:'GROUP BY finalist, COUNT(*) HAVING COUNT(*) > (subquery for average vote count per finalist).',answer:'SELECT finalist, COUNT(*) AS votes_received\nFROM jury_votes\nGROUP BY finalist\nHAVING COUNT(*) > (\n  SELECT AVG(vote_count)\n  FROM (\n    SELECT finalist, COUNT(*) AS vote_count\n    FROM jury_votes\n    GROUP BY finalist\n  )\n)\nORDER BY votes_received DESC;'},
+],
+8:[
+ {id:'8.L1',title:'Season Viewership Rankings',compound:false,challenge:'Rank all seasons by average viewership using RANK() OVER — highest viewership = rank 1. Show season name and rank.',hint:'RANK() OVER (ORDER BY viewers_mean DESC) from season_summary.',answer:'SELECT season, season_name,\n  ROUND(viewers_mean,2) AS avg_viewers,\n  RANK() OVER (ORDER BY viewers_mean DESC) AS viewership_rank\nFROM season_summary\nORDER BY viewership_rank;'},
+ {id:'8.L2',title:'Running Episode Viewership',compound:true,challenge:'For Season 46, show each episode\'s title, viewership, and the running cumulative total viewers for that season. (Compound: SUM() OVER with ORDER BY.)',hint:'SUM(viewers) OVER (ORDER BY episode) AS running_total WHERE season = 46.',answer:'SELECT episode, episode_title, viewers,\n  SUM(viewers) OVER (ORDER BY episode) AS cumulative_viewers\nFROM episodes\nWHERE season = 46\nORDER BY episode;'},
+],
+9:[
+ {id:'9.L1',title:'Age Bracket Breakdown',compound:false,challenge:'Categorize all castaways into age brackets: Under 25, 25-34, 35-44, 45-54, 55+. Count how many players fall into each group.',hint:'CASE WHEN age < 25 THEN... GROUP BY age_bracket ORDER BY MIN(age).',answer:'SELECT\n  CASE\n    WHEN age < 25 THEN \'Under 25\'\n    WHEN age < 35 THEN \'25-34\'\n    WHEN age < 45 THEN \'35-44\'\n    WHEN age < 55 THEN \'45-54\'\n    ELSE \'55+\'\n  END AS age_bracket,\n  COUNT(*) AS players\nFROM castaways\nWHERE age IS NOT NULL\nGROUP BY age_bracket\nORDER BY MIN(age);'},
+ {id:'9.L2',title:'Keyword Episode Hunt',compound:true,challenge:'Find every episode whose title contains \'Idol\', \'Merge\', or \'Finale\'. Label each with its type, and show the IMDB rating. (Compound: LIKE pattern matching + CASE + WHERE with OR.)',hint:'WHERE UPPER(episode_title) LIKE \'%IDOL%\' OR ... then CASE WHEN to assign type.',answer:'SELECT season, episode_title, imdb_rating,\n  CASE\n    WHEN UPPER(episode_title) LIKE \'%IDOL%\' THEN \'Idol\'\n    WHEN UPPER(episode_title) LIKE \'%MERGE%\' THEN \'Merge\'\n    ELSE \'Finale\'\n  END AS episode_type\nFROM episodes\nWHERE UPPER(episode_title) LIKE \'%IDOL%\'\n   OR UPPER(episode_title) LIKE \'%MERGE%\'\n   OR UPPER(episode_title) LIKE \'%FINALE%\'\nORDER BY episode_type, season;'},
+],
+10:[
+ {id:'10.L1',title:'Modern Era Scoreboard',compound:false,challenge:'Build a scoreboard for seasons 40 and later: season name, winner, cast size, average IMDB rating, and total viewers. Use a CTE for the episode stats.',hint:'WITH ep_stats AS (SELECT season, AVG(imdb_rating), SUM(viewers) FROM episodes GROUP BY season) then JOIN to season_summary WHERE season >= 40.',answer:'WITH ep_stats AS (\n  SELECT season,\n    ROUND(AVG(imdb_rating),2) AS avg_rating,\n    ROUND(SUM(viewers),1) AS total_viewers\n  FROM episodes\n  GROUP BY season\n)\nSELECT s.season, s.season_name, s.winner, s.n_cast,\n  e.avg_rating, e.total_viewers\nFROM season_summary s\nINNER JOIN ep_stats e ON s.season = e.season\nWHERE s.season >= 40\nORDER BY s.season;'},
+ {id:'10.L2',title:'The Winner\'s Edit — Real Data',compound:true,challenge:'For every season, did the winner receive above-average confessionals? Use CTEs to compute each player\'s total and the season average, then compare. (Full capstone: CTEs + JOIN + CASE.)',hint:'CTE 1: totals per castaway per season. CTE 2: avg per season. JOIN season_summary on winner_id.',answer:'WITH totals AS (\n  SELECT season, castaway_id, SUM(confessional_count) AS total\n  FROM confessionals\n  GROUP BY season, castaway_id\n),\navgs AS (\n  SELECT season, AVG(total) AS avg_conf\n  FROM totals GROUP BY season\n)\nSELECT s.season, s.winner,\n  t.total AS winner_conf,\n  ROUND(a.avg_conf,1) AS season_avg,\n  CASE WHEN t.total > a.avg_conf\n    THEN \'Above Average\' ELSE \'Below Average\'\n  END AS edit_status\nFROM season_summary s\nINNER JOIN totals t\n  ON s.winner_id = t.castaway_id AND s.season = t.season\nINNER JOIN avgs a ON s.season = a.season\nORDER BY s.season;'},
+],
+11:[
+ {id:'11.L1',title:'Season 45 Funnel',compound:false,challenge:'Build the real game funnel for Season 45: count players at each stage (Pre-Jury, Jury, Finalist, Winner) using actual castaway data.',hint:'CASE WHEN winner=1, finalist=1, jury=1, else Pre-Jury. GROUP BY stage, WHERE season=45.',answer:'SELECT\n  CASE\n    WHEN winner = 1 THEN \'4. Winner\'\n    WHEN finalist = 1 THEN \'3. Finalist\'\n    WHEN jury = 1 THEN \'2. Jury\'\n    ELSE \'1. Pre-Jury\'\n  END AS stage,\n  COUNT(*) AS players\nFROM castaways\nWHERE season = 45\nGROUP BY stage\nORDER BY stage;'},
+ {id:'11.L2',title:'Jury Conversion Rate Rankings',compound:true,challenge:'For every season, calculate the jury conversion rate (% who made jury) and rank them highest to lowest. (Compound: CTE + ROUND + RANK().)',hint:'WITH funnel AS (COUNT, SUM(jury) GROUP BY season) then RANK() OVER (ORDER BY rate DESC).',answer:'WITH funnel AS (\n  SELECT season,\n    COUNT(*) AS cast_size,\n    SUM(jury) AS jury_ct\n  FROM castaways\n  GROUP BY season\n)\nSELECT season, cast_size, jury_ct,\n  ROUND(100.0*jury_ct/cast_size,1) AS jury_rate_pct,\n  RANK() OVER (ORDER BY 100.0*jury_ct/cast_size DESC) AS rank\nFROM funnel\nORDER BY jury_rate_pct DESC;'},
+],
+12:[
+ {id:'12.L1',title:'Season 44 Episode Churn',compound:false,challenge:'For Season 44, how many players were voted out in each episode? Show episode and count, ordered by episode number.',hint:'COUNT(DISTINCT voted_out) WHERE season=44 AND voted_out != \'\' GROUP BY episode.',answer:'SELECT episode,\n  COUNT(DISTINCT voted_out) AS players_voted_out\nFROM vote_history\nWHERE season = 44\n  AND voted_out != \'\'\nGROUP BY episode\nORDER BY episode;'},
+ {id:'12.L2',title:'Average Tribal Council Churn',compound:true,challenge:'Across all seasons, what is the average number of players voted out per tribal council per season? (Compound: nested aggregation — first count per episode, then average those.)',hint:'Outer query: AVG of inner query\'s count per season. Inner: COUNT DISTINCT voted_out per season/episode.',answer:'SELECT ROUND(AVG(churned),2) AS avg_churn_per_tribal\nFROM (\n  SELECT season, episode,\n    COUNT(DISTINCT voted_out) AS churned\n  FROM vote_history\n  WHERE voted_out != \'\'\n  GROUP BY season, episode\n);'},
+],
+13:[
+ {id:'13.L1',title:'Viewership Histogram',compound:false,challenge:'Bucket all episodes by viewership: Under 10M, 10–15M, 15–20M, 20M+. Show bucket label, episode count, and average IMDB rating per bucket.',hint:'CASE WHEN viewers < 10 THEN... GROUP BY bucket ORDER BY MIN(viewers).',answer:'SELECT\n  CASE\n    WHEN viewers < 10 THEN \'Under 10M\'\n    WHEN viewers < 15 THEN \'10-15M\'\n    WHEN viewers < 20 THEN \'15-20M\'\n    ELSE \'20M+\'\n  END AS viewer_bucket,\n  COUNT(*) AS episodes,\n  ROUND(AVG(imdb_rating),2) AS avg_rating\nFROM episodes\nWHERE viewers IS NOT NULL\nGROUP BY viewer_bucket\nORDER BY MIN(viewers);'},
+ {id:'13.L2',title:'Fiji vs. Rest A/B Test',compound:true,challenge:'Treat Fiji seasons as the "treatment group" and all others as "control". Compare episode count, avg viewership, and avg IMDB rating for each group. What does the data say? (Compound: JOIN + GROUP BY + CASE.)',hint:'CASE WHEN s.country=\'Fiji\' THEN... JOIN season_summary with episodes, GROUP BY experiment_group.',answer:'SELECT\n  CASE WHEN s.country = \'Fiji\'\n    THEN \'Fiji (Treatment)\'\n    ELSE \'Other (Control)\'\n  END AS experiment_group,\n  COUNT(DISTINCT s.season) AS seasons,\n  COUNT(e.episode) AS episodes,\n  ROUND(AVG(e.viewers),2) AS avg_viewers,\n  ROUND(AVG(e.imdb_rating),2) AS avg_rating\nFROM season_summary s\nINNER JOIN episodes e ON s.season = e.season\nGROUP BY experiment_group;'},
+],
+14:[
+ {id:'14.L1',title:'Season-over-Season Viewership Lift',compound:false,challenge:'Calculate each season\'s average viewership and the change vs. the prior season using LAG(). Which season saw the biggest single-season drop or gain?',hint:'WITH avgs AS (AVG viewers per season) then LAG(avg_v) OVER (ORDER BY season) in outer query.',answer:'WITH avgs AS (\n  SELECT season, ROUND(AVG(viewers),2) AS avg_v\n  FROM episodes GROUP BY season\n)\nSELECT season, avg_v,\n  LAG(avg_v) OVER (ORDER BY season) AS prior_season,\n  ROUND(avg_v - LAG(avg_v) OVER (ORDER BY season),2) AS change\nFROM avgs\nORDER BY season;'},
+ {id:'14.L2',title:'New Location Debut Effect',compound:true,challenge:'When Survivor visits a location for the first time, does it get better viewership than return visits? Use ROW_NUMBER() to tag first vs. repeat visits, then compare avg viewers. (Compound: window function + conditional aggregation + JOIN.)',hint:'ROW_NUMBER() OVER (PARTITION BY location ORDER BY season) = 1 for debut. JOIN with episodes for viewers.',answer:'WITH ranked AS (\n  SELECT s.season, s.location, e.viewers,\n    ROW_NUMBER() OVER\n      (PARTITION BY s.location ORDER BY s.season) AS visit_num\n  FROM season_summary s\n  INNER JOIN episodes e ON s.season = e.season\n)\nSELECT location,\n  ROUND(AVG(CASE WHEN visit_num=1 THEN viewers END),2) AS debut_avg,\n  ROUND(AVG(CASE WHEN visit_num>1 THEN viewers END),2) AS return_avg\nFROM ranked\nGROUP BY location\nHAVING return_avg IS NOT NULL\nORDER BY debut_avg DESC;'},
+],
+15:[
+ {id:'15.L1',title:'Full Ratings Distribution',compound:false,challenge:'Compute the full statistical distribution for IMDB ratings: count, mean, min, max, and variance (AVG(x²) − AVG(x)²). Round to 3 decimal places.',hint:'SELECT COUNT, AVG, MIN, MAX, and AVG(imdb_rating*imdb_rating) - AVG(imdb_rating)*AVG(imdb_rating) AS variance.',answer:'SELECT\n  COUNT(*) AS n,\n  ROUND(AVG(imdb_rating),3) AS mean,\n  MIN(imdb_rating) AS min,\n  MAX(imdb_rating) AS max,\n  ROUND(\n    AVG(imdb_rating*imdb_rating)\n    - AVG(imdb_rating)*AVG(imdb_rating)\n  ,4) AS variance\nFROM episodes\nWHERE imdb_rating IS NOT NULL;'},
+ {id:'15.L2',title:'Era Cohort Demographics',compound:true,challenge:'Divide Survivor into 5 eras (Classic S1-10, Middle S11-20, Evolved S21-30, Modern S31-40, New Era S41+). For each era show: seasons, player count, avg age, and % female players. (Compound: CASE + JOIN + GROUP BY + ROUND + CASE inside AVG.)',hint:'CASE WHEN season BETWEEN ... JOIN castaways with castaway_details for gender. GROUP BY era.',answer:'SELECT\n  CASE\n    WHEN c.season <= 10 THEN \'Classic (S1-10)\'\n    WHEN c.season <= 20 THEN \'Middle (S11-20)\'\n    WHEN c.season <= 30 THEN \'Evolved (S21-30)\'\n    WHEN c.season <= 40 THEN \'Modern (S31-40)\'\n    ELSE \'New Era (S41+)\'\n  END AS era,\n  COUNT(DISTINCT c.season) AS seasons,\n  COUNT(*) AS players,\n  ROUND(AVG(c.age),1) AS avg_age,\n  ROUND(100.0*SUM(CASE WHEN cd.gender=\'Female\' THEN 1 ELSE 0 END)/COUNT(*),1) AS pct_female\nFROM castaways c\nINNER JOIN castaway_details cd ON c.castaway_id = cd.castaway_id\nWHERE c.age IS NOT NULL\nGROUP BY era\nORDER BY MIN(c.season);'},
+],
+16:[
+ {id:'16.L1',title:'Year-over-Year Audience Growth',compound:false,challenge:'Calculate each season\'s avg viewership and the year-over-year growth % vs. the prior season. Which season grew the most? Which dropped the most?',hint:'WITH avgs AS (AVG viewers per season) then (avg_v / LAG(avg_v) OVER (...) - 1)*100 AS growth_pct.',answer:'WITH avgs AS (\n  SELECT season, ROUND(AVG(viewers),2) AS avg_viewers\n  FROM episodes GROUP BY season\n)\nSELECT season, avg_viewers,\n  ROUND(\n    (avg_viewers / LAG(avg_viewers) OVER (ORDER BY season) - 1)*100\n  ,1) AS growth_pct\nFROM avgs\nORDER BY season;'},
+ {id:'16.L2',title:'Premiere-to-Peak Retention',compound:true,challenge:'For each season, calculate the retention index: peak viewership divided by premiere viewership. A score above 1 means the season built momentum. (Compound: conditional aggregation + CAST + JOIN.)',hint:'MAX(CASE WHEN episode=1 THEN viewers END) for premiere, MAX(viewers) for peak. CAST for float division.',answer:'WITH ep AS (\n  SELECT season,\n    MAX(CASE WHEN episode=1 THEN viewers END) AS premiere,\n    MAX(viewers) AS peak\n  FROM episodes GROUP BY season\n)\nSELECT e.season, s.season_name,\n  e.premiere AS premiere_viewers,\n  e.peak AS peak_viewers,\n  ROUND(CAST(e.peak AS FLOAT)/e.premiere,2) AS retention_index\nFROM ep e\nINNER JOIN season_summary s ON e.season = s.season\nWHERE e.premiere IS NOT NULL\nORDER BY retention_index DESC;'},
+],
+17:[
+ {id:'17.L1',title:'Tribal Council Throughput',compound:false,challenge:'For each season, calculate: total tribals held, total votes cast, and average votes per tribal. This is your operational throughput dashboard.',hint:'COUNT(DISTINCT episode) AS tribals, COUNT(*) AS total_votes, ROUND(CAST(COUNT(*) AS FLOAT)/COUNT(DISTINCT episode),1) AS avg — GROUP BY season.',answer:'SELECT season,\n  COUNT(DISTINCT episode) AS tribals,\n  COUNT(*) AS total_votes,\n  ROUND(CAST(COUNT(*) AS FLOAT)/COUNT(DISTINCT episode),1)\n    AS avg_votes_per_tribal\nFROM vote_history\nGROUP BY season\nORDER BY season;'},
+ {id:'17.L2',title:'Chaos Detection — Tie Votes',compound:true,challenge:'Find every tribal council where tie votes occurred. Show season, episode, total votes, tied votes, tie %, and flag high-tie tribals (>40% ties) as anomalies. (Compound: SUM + CASE + HAVING.)',hint:'SUM(tie) for tied votes. ROUND(100.0*SUM(tie)/COUNT(*),1) for pct. CASE WHEN pct>40 THEN flag.',answer:'SELECT season, episode,\n  COUNT(*) AS total_votes,\n  SUM(tie) AS tied_votes,\n  ROUND(100.0*SUM(tie)/COUNT(*),1) AS tie_pct,\n  CASE WHEN 100.0*SUM(tie)/COUNT(*) > 40\n    THEN \'🚨 Anomaly\' ELSE \'✅ Normal\'\n  END AS flag\nFROM vote_history\nGROUP BY season, episode\nHAVING SUM(tie) > 0\nORDER BY tie_pct DESC\nLIMIT 20;'},
+],
+18:[
+ {id:'18.L1',title:'Player Segmentation',compound:false,challenge:'Segment all castaways by outcome: Winner, Runner-up, Jury Member, Eliminated. Show count and average placement for each segment — your user segmentation dashboard.',hint:'CASE WHEN winner=1, finalist=1, jury=1, else Eliminated. GROUP BY segment, AVG(place).',answer:'SELECT\n  CASE\n    WHEN winner=1 THEN \'Winner\'\n    WHEN finalist=1 THEN \'Runner-up\'\n    WHEN jury=1 THEN \'Jury Member\'\n    ELSE \'Eliminated\'\n  END AS segment,\n  COUNT(*) AS count,\n  ROUND(AVG(place),1) AS avg_place,\n  ROUND(AVG(age),1) AS avg_age\nFROM castaways\nWHERE age IS NOT NULL\nGROUP BY segment\nORDER BY avg_place;'},
+ {id:'18.L2',title:'Full Franchise KPI Dashboard',compound:true,challenge:'Build a single-row executive KPI dashboard for the entire Survivor franchise: total seasons, unique players, total episodes, avg viewers, peak viewers, best IMDB rating, and total tie votes. One query, one row. (Compound: multi-table subqueries.)',hint:'Each metric is a subquery: (SELECT COUNT(DISTINCT season) FROM season_summary), (SELECT MAX(viewers) FROM episodes), etc.',answer:'SELECT\n  (SELECT COUNT(DISTINCT season) FROM season_summary) AS total_seasons,\n  (SELECT COUNT(DISTINCT castaway_id) FROM castaways) AS unique_players,\n  (SELECT COUNT(*) FROM episodes) AS total_episodes,\n  (SELECT ROUND(AVG(viewers),1) FROM episodes) AS avg_viewers,\n  (SELECT MAX(viewers) FROM episodes) AS peak_viewers,\n  (SELECT MAX(imdb_rating) FROM episodes) AS best_imdb,\n  (SELECT SUM(tie) FROM vote_history) AS total_tie_votes;'},
+],
+};
 
 // ===== STATE =====
 let completed = JSON.parse(localStorage.getItem('ssq_done')||'{}');
@@ -735,6 +935,38 @@ function refreshModuleView(){
   if(mod.bonus&&mod.bonus.length){
     html+=`<div class="bonus-section"><div class="bonus-title">🗳️ Cast an Extra Vote — Bonus Scenarios</div>`;
     mod.bonus.forEach(s=>{html+=renderScenario(s,true);});
+    html+=`</div>`;
+  }
+
+  // Live Practice section
+  const lqs=LIVE_QUESTIONS[mod.id]||[];
+  if(lqs.length>0){
+    html+=`<div class="live-section"><div class="live-title">🟢 Live Practice &mdash; Real Queries on Real Survivor Data</div>`;
+    lqs.forEach(q=>{
+      const key=mod.id+'-'+q.id;
+      html+=`<div class="live-q">
+        <div class="live-q-label mono">${q.compound?'🔗 COMPOUND CHALLENGE':'⚡ FOCUSED PRACTICE'} &mdash; ${q.id}</div>
+        <div class="live-q-title">${q.title}</div>
+        <p class="live-challenge">${q.challenge}</p>
+        <div style="margin-bottom:10px"><div class="editor-label mono">Your SQL</div>
+          <textarea class="live-editor mono" id="live-editor-${key}" placeholder="Write your SQL here and click Run..." spellcheck="false"></textarea></div>
+        <div class="toggle-row">
+          <button class="live-run-btn mono" id="live-run-btn-${key}" onclick="liveRun('${key}')">▶ Run Query</button>
+          <button class="live-hint-btn" onclick="toggleLivePanel(this,'live-hint-${key}')">💡 Hint</button>
+          <button class="live-answer-btn" onclick="toggleLivePanel(this,'live-answer-${key}')">✅ Reference Answer</button>
+        </div>
+        <div id="live-hint-${key}" class="hidden"><div class="hint-box">💡 ${q.hint}</div></div>
+        <div id="live-answer-${key}" class="hidden"><div class="answer-header">REFERENCE ANSWER</div>`+codeBlockHTML(q.answer,'live-code-'+key)+`</div>
+        <div class="live-results-box" id="live-results-box-${key}">
+          <div class="live-results-hdr">
+            <span class="live-results-lbl mono">RESULTS</span>
+            <span class="live-results-ct" id="live-results-ct-${key}" style="display:none"></span>
+            <span class="live-results-ms" id="live-results-ms-${key}" style="display:none"></span>
+          </div>
+          <div class="live-results-body" id="live-results-body-${key}"></div>
+        </div>
+      </div>`;
+    });
     html+=`</div>`;
   }
 
@@ -1221,6 +1453,83 @@ function pgRenderError(message){
 
 function pgEsc(s){
   return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+// ===== LIVE PRACTICE ENGINE =====
+async function ensureDBReady(){
+  if(pgReady && pgDB) return pgDB;
+  if(!pgInitStarted){
+    pgInitStarted=true;
+    const SQL=await initSqlJs({locateFile:f=>`https://cdnjs.cloudflare.com/ajax/libs/sql.js/1.10.3/${f}`});
+    const resp=await fetch('/survivor.db');
+    if(!resp.ok) throw new Error('Could not load survivor.db');
+    const buf=new Uint8Array(await resp.arrayBuffer());
+    pgDB=new SQL.Database(buf);
+    pgReady=true;
+  } else {
+    await new Promise(resolve=>{const iv=setInterval(()=>{if(pgReady){clearInterval(iv);resolve();}},150);});
+  }
+  return pgDB;
+}
+
+async function liveRun(key){
+  const editor=document.getElementById('live-editor-'+key);
+  const btn=document.getElementById('live-run-btn-'+key);
+  const box=document.getElementById('live-results-box-'+key);
+  const ctEl=document.getElementById('live-results-ct-'+key);
+  const msEl=document.getElementById('live-results-ms-'+key);
+  const body=document.getElementById('live-results-body-'+key);
+  const sql=(editor.value||'').trim();
+  if(!sql) return;
+  btn.disabled=true;
+  box.classList.add('visible');
+  body.innerHTML='<div style="padding:18px;text-align:center;color:#4a7a5a;font-size:13px">⏳ Loading database...</div>';
+  ctEl.style.display='none'; msEl.style.display='none';
+  try{
+    const db=await ensureDBReady();
+    const t0=performance.now();
+    const results=db.exec(sql);
+    const ms=parseFloat((performance.now()-t0).toFixed(1));
+    renderLiveResults(body,ctEl,msEl,results,ms);
+  }catch(err){
+    body.innerHTML=`<div class="pg-error-box">Error: ${pgEsc(err.message)}</div>`;
+    ctEl.style.display='none'; msEl.style.display='none';
+  }finally{
+    btn.disabled=false;
+  }
+}
+
+function renderLiveResults(body,ctEl,msEl,results,ms){
+  if(!results||results.length===0){
+    body.innerHTML='<div style="padding:14px;text-align:center;color:#4a7a5a;font-size:13px">Query ran — no rows returned.</div>';
+    ctEl.style.display='none'; msEl.style.display='none'; return;
+  }
+  let html=''; let total=0;
+  results.forEach(r=>{
+    const {columns,values}=r; total+=values.length;
+    html+='<table class="pg-table"><thead><tr>';
+    columns.forEach(c=>{html+=`<th class="mono">${pgEsc(c)}</th>`;});
+    html+='</tr></thead><tbody>';
+    values.slice(0,200).forEach(row=>{
+      html+='<tr>';
+      row.forEach(cell=>{
+        if(cell===null||cell===undefined) html+='<td><span class="pg-null-cell">NULL</span></td>';
+        else html+=`<td title="${pgEsc(String(cell))}">${pgEsc(String(cell))}</td>`;
+      });
+      html+='</tr>';
+    });
+    html+='</tbody></table>';
+    if(values.length>200) html+=`<div style="padding:6px 12px;font-size:11px;color:#4a7a5a">Showing first 200 of ${values.length} rows.</div>`;
+  });
+  body.innerHTML=html;
+  ctEl.textContent=total+(total===1?' row':' rows'); ctEl.style.display='';
+  msEl.textContent=ms+'ms'; msEl.style.display='';
+}
+
+function toggleLivePanel(btn,id){
+  const el=document.getElementById(id);
+  const nowHidden=el.classList.toggle('hidden');
+  btn.classList.toggle('open',!nowHidden);
 }
 
 // ===== INIT =====
