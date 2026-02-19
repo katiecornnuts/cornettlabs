@@ -3,8 +3,17 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Learn SQL with Survivant</title>
+<title>Learn SQL with Survivor</title>
 <link href="https://fonts.googleapis.com/css2?family=Newsreader:opsz,wght@6..72,300;6..72,400;6..72,600;6..72,700&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/sql.js/1.10.3/sql-wasm.js"></script>
+<style>
+@font-face {
+  font-family: 'Survivant';
+  src: url('/survivant.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+</style>
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 :root{--torch:#d4611e;--jungle:#2e6b47;--sand:#f5e6cc;--dark:#1a1612;--gray:#8a7e70;--light-bg:#f9f6f1;--page-bg:#f4f0e8;--border:#e0d8cc;--white:#fff}
@@ -179,12 +188,93 @@ h2{font-size:24px;color:var(--dark);margin-bottom:6px}
 footer{text-align:center;padding:28px 24px;color:var(--gray);font-size:12px;border-top:1px solid var(--border);margin-top:36px}
 .hidden{display:none}
 @media(max-width:600px){.header-inner{flex-direction:column;align-items:flex-start}.cheat-header,.cheat-row{grid-template-columns:90px 1fr 1fr}}
+
+/* ===== PLAYGROUND TAB ===== */
+#tab-playground{padding-top:4px}
+.pg-layout{display:grid;grid-template-columns:1fr;gap:16px}
+.pg-editor-panel{background:var(--white);border:1px solid var(--border);border-radius:12px;overflow:hidden}
+.pg-editor-header{background:#1a1612;padding:10px 16px;display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}
+.pg-editor-label{font-size:10px;font-weight:700;color:var(--torch);letter-spacing:1.5px}
+.pg-run-btn{padding:7px 18px;border-radius:6px;border:none;background:var(--torch);color:var(--white);font-size:12px;font-weight:700;cursor:pointer;letter-spacing:.5px;transition:background .2s}
+.pg-run-btn:hover:not(:disabled){background:#c0551a}
+.pg-run-btn:disabled{background:#5a4a3a;color:#8a7e70;cursor:not-allowed}
+.pg-clear-btn{padding:7px 14px;border-radius:6px;border:1px solid #4a4038;background:transparent;color:#8a7e70;font-size:12px;cursor:pointer;transition:all .2s}
+.pg-clear-btn:hover{border-color:#6a5a4a;color:#c4b8a8}
+.pg-textarea{width:100%;min-height:120px;max-height:320px;padding:14px 18px;font-size:13px;line-height:1.7;background:#1a1612;border:none;border-top:1px solid #3a3228;color:#e8dfd4;resize:vertical;outline:none;font-family:'JetBrains Mono','Fira Code',monospace}
+.pg-textarea:focus{border-top-color:var(--torch)}
+.pg-meta-row{padding:8px 16px;background:#12100e;border-top:1px solid #2a2218;display:flex;gap:16px;align-items:center;flex-wrap:wrap;min-height:32px}
+.pg-meta-item{font-size:11px;color:#6a6258}
+.pg-status-dot{width:7px;height:7px;border-radius:50%;background:#3a3228;display:inline-block;margin-right:6px;flex-shrink:0}
+.pg-status-dot.ready{background:var(--jungle)}
+.pg-status-dot.loading{background:#e0c97a;animation:blink .8s step-end infinite}
+.pg-status-dot.error{background:#c0392b}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:0.3}}
+.pg-loading-overlay{padding:60px 24px;text-align:center;color:#6a6258}
+.pg-spinner{font-size:36px;display:inline-block;margin-bottom:12px;animation:spin 2s linear infinite}
+@keyframes spin{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
+.pg-loading-bar-track{width:260px;height:6px;background:#e0d8cc;border-radius:3px;margin:14px auto 0;overflow:hidden}
+.pg-loading-bar-fill{height:100%;background:linear-gradient(90deg,var(--torch),#e8943e);border-radius:3px;width:0%;transition:width .3s}
+.pg-table-list{background:var(--white);border:1px solid var(--border);border-radius:12px;padding:14px 16px}
+.pg-table-list-label{font-size:10px;font-weight:700;color:var(--gray);letter-spacing:1.5px;margin-bottom:10px}
+.pg-table-chip{display:inline-block;margin:3px 3px;padding:3px 9px;background:var(--page-bg);border:1px solid var(--border);border-radius:5px;font-size:11px;color:#6a6258;cursor:pointer;transition:all .2s;font-family:'JetBrains Mono',monospace}
+.pg-table-chip:hover{background:var(--sand);color:var(--dark);border-color:var(--torch)}
+.pg-results-panel{background:var(--white);border:1px solid var(--border);border-radius:12px;overflow:hidden}
+.pg-results-header{background:var(--light-bg);padding:9px 16px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.pg-results-label{font-size:10px;font-weight:700;color:var(--gray);letter-spacing:1.5px}
+.pg-results-count{font-size:11px;color:var(--gray);background:var(--page-bg);padding:2px 8px;border-radius:10px}
+.pg-results-time{font-size:11px;color:var(--gray)}
+.pg-results-body{overflow-x:auto;max-height:420px;overflow-y:auto}
+.pg-table{width:100%;border-collapse:collapse;font-size:12px}
+.pg-table th{background:var(--dark);color:#c4b8a8;font-weight:700;font-size:10px;letter-spacing:.8px;padding:8px 12px;text-align:left;position:sticky;top:0;white-space:nowrap}
+.pg-table td{padding:7px 12px;border-bottom:1px solid #eee;color:var(--dark);white-space:nowrap;max-width:300px;overflow:hidden;text-overflow:ellipsis}
+.pg-table tr:nth-child(even) td{background:var(--light-bg)}
+.pg-table tr:hover td{background:var(--sand)}
+.pg-null-cell{color:#b0a898;font-style:italic;font-size:11px}
+.pg-error-box{padding:16px 20px;background:#fef0ee;border-left:4px solid #c0392b;margin:12px;border-radius:6px;font-family:'JetBrains Mono','Fira Code',monospace;font-size:12px;color:#7a1a1a;line-height:1.6;white-space:pre-wrap;word-break:break-word}
+.pg-placeholder{padding:40px 24px;text-align:center;color:#b0a898;font-size:14px}
+
+/* Table detail modal */
+.pg-modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:2000;display:none;align-items:center;justify-content:center;animation:fadeIn .2s}
+.pg-modal-overlay.visible{display:flex}
+.pg-modal-box{background:var(--white);border-radius:14px;width:90%;max-width:780px;max-height:82vh;display:flex;flex-direction:column;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,.3);animation:popIn .25s}
+.pg-modal-header{background:#1a1612;padding:14px 20px;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-shrink:0}
+.pg-modal-title{font-size:14px;font-weight:700;color:var(--torch);font-family:'JetBrains Mono',monospace}
+.pg-modal-subtitle{font-size:11px;color:#6a6258;margin-top:2px}
+.pg-modal-close{background:none;border:none;color:#6a6258;font-size:20px;cursor:pointer;line-height:1;padding:2px 6px;border-radius:4px}
+.pg-modal-close:hover{color:#c4b8a8;background:#2a2218}
+.pg-modal-body{overflow-y:auto;padding:0}
+.pg-modal-section-label{font-size:10px;font-weight:700;color:var(--gray);letter-spacing:1.5px;padding:12px 18px 6px;background:var(--light-bg);border-bottom:1px solid var(--border)}
+.pg-col-grid{display:flex;flex-wrap:wrap;gap:6px;padding:12px 18px 14px}
+.pg-col-pill{font-size:11px;padding:3px 10px;border-radius:12px;background:var(--page-bg);border:1px solid var(--border);color:#3a3228;font-family:'JetBrains Mono',monospace}
+.pg-modal-use-btn{margin:0 18px 14px;padding:7px 16px;border-radius:6px;border:none;background:var(--torch);color:var(--white);font-size:12px;font-weight:700;cursor:pointer;font-family:'JetBrains Mono',monospace;display:inline-block}
+.pg-modal-use-btn:hover{background:#c0551a}
+
+/* Query history */
+.pg-history-section{margin-top:20px;border:1px solid var(--border);border-radius:12px;overflow:hidden}
+.pg-history-toggle{width:100%;background:var(--light-bg);border:none;padding:11px 16px;display:flex;align-items:center;justify-content:space-between;cursor:pointer;text-align:left}
+.pg-history-toggle:hover{background:var(--sand)}
+.pg-history-label{font-size:10px;font-weight:700;color:var(--gray);letter-spacing:1.5px}
+.pg-history-caret{font-size:12px;color:var(--gray);transition:transform .2s}
+.pg-history-caret.open{transform:rotate(180deg)}
+.pg-history-body{display:none;max-height:340px;overflow-y:auto}
+.pg-history-body.open{display:block}
+.pg-history-empty{padding:24px;text-align:center;color:#b0a898;font-size:13px}
+.pg-history-item{padding:11px 16px;border-top:1px solid var(--border);display:grid;grid-template-columns:auto 1fr auto;gap:10px;align-items:start;cursor:pointer;transition:background .15s}
+.pg-history-item:hover{background:var(--light-bg)}
+.pg-history-item:first-child{border-top:none}
+.pg-history-time{font-size:10px;color:var(--gray);font-family:'JetBrains Mono',monospace;white-space:nowrap;padding-top:2px}
+.pg-history-summary{font-size:13px;color:var(--dark);line-height:1.4}
+.pg-history-sql{font-size:10px;color:#8a7e70;font-family:'JetBrains Mono',monospace;margin-top:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:500px}
+.pg-history-meta{font-size:10px;color:var(--gray);white-space:nowrap;text-align:right;padding-top:2px}
+.pg-history-rerun{font-size:10px;color:var(--torch);font-weight:700;display:block;margin-top:3px}
+.pg-history-clear{font-size:11px;color:#8a7e70;background:none;border:1px solid var(--border);border-radius:5px;padding:3px 10px;cursor:pointer;margin-right:4px}
+.pg-history-clear:hover{color:#c0392b;border-color:#c0392b}
 </style>
 </head>
 <body>
 <header>
   <div class="header-inner">
-    <div><div class="header-label mono">Learn SQL with</div><div class="header-title">SURVIVANT</div></div>
+    <div><div class="header-label mono">Learn SQL with</div><div class="header-title" style="font-family:'Survivant',Georgia,serif">SURVIVOR</div></div>
     <div style="text-align:right"><div class="mono" style="font-size:10px;color:#6a6258;margin-bottom:4px">OVERALL PROGRESS</div>
       <div class="progress-bar" style="width:180px"><div class="progress-track"><div class="progress-fill" id="globalFill" style="width:0%"></div></div><span class="progress-count mono" id="globalCount">0/0</span></div>
     </div>
@@ -196,6 +286,7 @@ footer{text-align:center;padding:28px 24px;color:var(--gray);font-size:12px;bord
     <button class="nav-btn mono active" data-tab="lessons" onclick="switchTab('lessons')">Lessons</button>
     <button class="nav-btn mono" data-tab="tables" onclick="switchTab('tables')">Database Tables</button>
     <button class="nav-btn mono" data-tab="cheatsheet" onclick="switchTab('cheatsheet')">Cheat Sheet</button>
+    <button class="nav-btn mono" data-tab="playground" onclick="switchTab('playground')">Query Playground</button>
     <div style="flex:1"></div>
     <button class="api-gear" onclick="toggleApiBar()" title="AI Tutor Settings">⚙️</button>
   </div>
@@ -213,6 +304,77 @@ footer{text-align:center;padding:28px 24px;color:var(--gray);font-size:12px;bord
   <div id="tab-lessons"><div id="module-grid-view"><h2>Your Learning Path</h2><p class="subtitle" id="subtitleText"></p><div class="module-grid" id="moduleGrid"></div></div><div id="module-detail-view" class="hidden"></div></div>
   <div id="tab-tables" class="hidden"><h2>Your Database Tables</h2><p class="subtitle">Each table is like a spreadsheet tab. Hover 📋 tags on scenarios to see columns.</p><div id="tablesContainer"></div></div>
   <div id="tab-cheatsheet" class="hidden"><h2>SQL Quick Reference</h2><p class="subtitle">Keep this handy as you work through the lessons.</p><div id="cheatContainer"></div></div>
+  <div id="tab-playground" class="hidden">
+    <h2>Query Playground</h2>
+    <p class="subtitle">Run any SQL query against real Survivor data. The database loads once in your browser — no server needed.</p>
+    <div id="pg-loading-overlay" class="pg-loading-overlay">
+      <div><span class="pg-spinner">🔥</span></div>
+      <div style="font-size:14px;color:#8a7e70;margin-bottom:4px">Loading Survivor database...</div>
+      <div style="font-size:12px;color:#6a6258" id="pg-loading-msg">Fetching survivor.db</div>
+      <div class="pg-loading-bar-track"><div class="pg-loading-bar-fill" id="pg-loading-bar"></div></div>
+    </div>
+    <div id="pg-main" class="hidden">
+      <div class="pg-layout">
+        <div class="pg-editor-panel">
+          <div class="pg-editor-header">
+            <span class="pg-editor-label mono">SQL EDITOR</span>
+            <div style="display:flex;gap:8px">
+              <button class="pg-clear-btn mono" onclick="pgClear()">Clear</button>
+              <button class="pg-run-btn mono" id="pg-run-btn" onclick="pgRun()">Run Query ▶</button>
+            </div>
+          </div>
+          <textarea class="pg-textarea mono" id="pg-editor" placeholder="-- Write any SQL here&#10;-- Example:&#10;SELECT season_name, winner FROM season_summary LIMIT 10;" spellcheck="false" onkeydown="pgHandleKey(event)"></textarea>
+          <div class="pg-meta-row">
+            <div style="display:flex;align-items:center">
+              <span class="pg-status-dot ready" id="pg-status-dot"></span>
+              <span class="pg-meta-item" id="pg-status-text">Database ready</span>
+            </div>
+            <span class="pg-meta-item" id="pg-rows-meta" style="display:none">Rows: <span id="pg-row-count">0</span></span>
+            <span class="pg-meta-item" id="pg-time-meta" style="display:none">Time: <span id="pg-exec-time">0ms</span></span>
+          </div>
+        </div>
+        <div class="pg-table-list">
+          <div class="pg-table-list-label mono">TABLES — click for details</div>
+          <div id="pg-table-chips"></div>
+        </div>
+        <div class="pg-results-panel">
+          <div class="pg-results-header">
+            <span class="pg-results-label mono">RESULTS</span>
+            <span class="pg-results-count mono" id="pg-results-count" style="display:none"></span>
+            <span class="pg-results-time mono" id="pg-results-time" style="display:none"></span>
+          </div>
+          <div id="pg-results-body">
+            <div class="pg-placeholder">Run a query to see results here. Try: <code>SELECT season_name, winner FROM season_summary LIMIT 10;</code></div>
+          </div>
+        </div>
+        <div class="pg-history-section">
+          <button class="pg-history-toggle" onclick="pgToggleHistory()">
+            <span class="pg-history-label mono">▸ QUERY HISTORY</span>
+            <div style="display:flex;align-items:center;gap:8px">
+              <button class="pg-history-clear" onclick="pgClearHistory(event)">Clear all</button>
+              <span class="pg-history-caret" id="pg-history-caret">▾</span>
+            </div>
+          </button>
+          <div class="pg-history-body" id="pg-history-body">
+            <div class="pg-history-empty" id="pg-history-empty">No queries run yet. Run your first query above!</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- Table detail modal -->
+  <div id="pg-modal-overlay" class="pg-modal-overlay" onclick="if(event.target===this)pgCloseModal()">
+    <div class="pg-modal-box">
+      <div class="pg-modal-header">
+        <div>
+          <div class="pg-modal-title" id="pg-modal-title"></div>
+          <div class="pg-modal-subtitle" id="pg-modal-subtitle"></div>
+        </div>
+        <button class="pg-modal-close" onclick="pgCloseModal()">✕</button>
+      </div>
+      <div class="pg-modal-body" id="pg-modal-body"></div>
+    </div>
+  </div>
 </main>
 <footer><span style="color:var(--torch)">🔥</span> The tribe has spoken. Now go write some queries!</footer>
 <div id="modalContainer"></div>
@@ -489,9 +651,10 @@ function checkModuleStruggle(mod){
 // ===== TABS =====
 function switchTab(t){
   document.querySelectorAll('.nav-btn').forEach(b=>b.classList.toggle('active',b.dataset.tab===t));
-  ['lessons','tables','cheatsheet'].forEach(x=>document.getElementById('tab-'+x).classList.toggle('hidden',x!==t));
+  ['lessons','tables','cheatsheet','playground'].forEach(x=>document.getElementById('tab-'+x).classList.toggle('hidden',x!==t));
   if(t!=='lessons')currentModule=null;
   if(t==='lessons')renderModuleGrid();
+  if(t==='playground')pgInit();
   renderTorches();window.scrollTo(0,0);
 }
 
@@ -651,8 +814,417 @@ ch+=`</div><div class="ops-box"><div class="ops-label mono">QUERY ORDER OF OPERA
 ch+=`</div></div>`;
 document.getElementById('cheatContainer').innerHTML=ch;
 
+// ===== PLAYGROUND =====
+let pgDB = null;
+let pgReady = false;
+let pgInitStarted = false;
+
+const PG_TABLES = [
+  {name:'advantage_details',     cols:'version, version_season, season, advantage_id, advantage_type, clue_details, location_found, conditions'},
+  {name:'advantage_movement',    cols:'version, version_season, season, castaway, castaway_id, advantage_id, sequence_id, day, episode, event, played_for, played_for_id, success, votes_nullified, sog_id'},
+  {name:'auction_details',       cols:'version, version_season, season, item, item_description, category, castaway, castaway_id, cost, covered, money_remaining, auction_num, participated, notes'},
+  {name:'boot_mapping',          cols:'version, version_season, season, episode, order, n_boots, final_n, sog_id, castaway_id, castaway, tribe, tribe_status, game_status'},
+  {name:'boot_order',            cols:'version, version_season, season, castaway_id, castaway, episode, day, order, result'},
+  {name:'castaway_details',      cols:'castaway_id, full_name, full_name_detailed, castaway, last_name, date_of_birth, date_of_death, gender, african, asian, latin_american, native_american, bipoc, lgbt, personality_type, occupation, collar'},
+  {name:'castaway_scores',       cols:'version, version_season, season, castaway, castaway_id, score_overall, score_outwit, score_outplay, score_outlast, score_result, score_jury, score_vote, score_adv, score_inf'},
+  {name:'castaways',             cols:'version, version_season, season, full_name, castaway_id, castaway, age, city, state, episode, day, order, result, jury_status, place, original_tribe, jury, finalist, winner'},
+  {name:'challenge_description', cols:'version, version_season, season, episode, challenge_id, challenge_number, challenge_type, name, recurring_name, description, reward, balance, endurance, fire, puzzle, race, strength, water'},
+  {name:'challenge_results',     cols:'version, version_season, season, episode, castaway_id, castaway, tribe, tribe_status, challenge_type, outcome_type, result, result_notes, chosen_for_reward, sit_out, order_of_finish, won'},
+  {name:'challenge_summary',     cols:'category, version, version_season, season, episode, castaway_id, castaway, tribe, challenge_type, outcome_type, challenge_id, sog_id, won, n_entities, n_winners'},
+  {name:'confessionals',         cols:'version, version_season, season, episode, castaway, castaway_id, confessional_count, confessional_time, exp_count, exp_time'},
+  {name:'episodes',              cols:'version, version_season, season, episode_number_overall, episode, episode_title, episode_label, episode_date, episode_length, viewers, imdb_rating, n_ratings, episode_summary'},
+  {name:'journeys',              cols:'version, season, version_season, episode, sog_id, castaway_id, castaway, reward, lost_vote, game_played, chose_to_play, event'},
+  {name:'jury_votes',            cols:'version, version_season, season, castaway, finalist, vote, castaway_id, finalist_id'},
+  {name:'season_palettes',       cols:'version, version_season, season, palette'},
+  {name:'season_summary',        cols:'version, version_season, season_name, season, location, country, tribe_setup, n_cast, n_tribes, n_finalists, n_jury, full_name, winner_id, winner, runner_ups, final_vote, timeslot, premiered, ended, viewers_mean'},
+  {name:'survivor_auction',      cols:'version, version_season, season, episode, n_boots, castaway_id, castaway, tribe, tribe_status, total, currency'},
+  {name:'tribe_colours',         cols:'version, version_season, season, tribe, tribe_colour, tribe_status'},
+  {name:'tribe_mapping',         cols:'version, version_season, season, episode, day, castaway_id, castaway, tribe, tribe_status'},
+  {name:'viewers',               cols:'version, version_season, season, episode_number_overall, episode, episode_title, episode_date, episode_length, viewers, imdb_rating, n_ratings'},
+  {name:'vote_history',          cols:'version, version_season, season, episode, day, tribe_status, tribe, castaway, immunity, vote, vote_event, vote_event_outcome, split_vote, nullified, tie, voted_out, order, vote_order, castaway_id, vote_id, voted_out_id'},
+];
+
+function pgInit(){
+  if(pgInitStarted) return;
+  pgInitStarted = true;
+  pgRenderTableChips();
+  pgLoadDB();
+}
+
+async function pgLoadDB(){
+  const dot = document.getElementById('pg-status-dot');
+  const statusText = document.getElementById('pg-status-text');
+  const loadingMsg = document.getElementById('pg-loading-msg');
+  const loadingBar = document.getElementById('pg-loading-bar');
+  try {
+    loadingMsg.textContent = 'Initializing sql.js...';
+    loadingBar.style.width = '10%';
+    const SQL = await initSqlJs({
+      locateFile: file => `https://cdnjs.cloudflare.com/ajax/libs/sql.js/1.10.3/${file}`
+    });
+    loadingMsg.textContent = 'Downloading survivor.db...';
+    loadingBar.style.width = '20%';
+    const response = await fetch('/survivor.db');
+    if(!response.ok) throw new Error(`HTTP ${response.status}: Could not load survivor.db`);
+    const contentLength = response.headers.get('Content-Length');
+    let buffer;
+    if(contentLength){
+      const total = parseInt(contentLength, 10);
+      const reader = response.body.getReader();
+      let received = 0;
+      const chunks = [];
+      while(true){
+        const {done, value} = await reader.read();
+        if(done) break;
+        chunks.push(value);
+        received += value.length;
+        const pct = Math.round(20 + (received/total)*70);
+        loadingBar.style.width = pct + '%';
+        loadingMsg.textContent = `Downloading... ${(received/1024/1024).toFixed(1)} MB / ${(total/1024/1024).toFixed(1)} MB`;
+      }
+      const full = new Uint8Array(received);
+      let offset = 0;
+      for(const chunk of chunks){ full.set(chunk, offset); offset += chunk.length; }
+      buffer = full;
+    } else {
+      loadingMsg.textContent = 'Downloading survivor.db...';
+      buffer = new Uint8Array(await response.arrayBuffer());
+      loadingBar.style.width = '90%';
+    }
+    loadingMsg.textContent = 'Opening database...';
+    loadingBar.style.width = '95%';
+    pgDB = new SQL.Database(buffer);
+    loadingBar.style.width = '100%';
+    pgReady = true;
+    document.getElementById('pg-loading-overlay').classList.add('hidden');
+    document.getElementById('pg-main').classList.remove('hidden');
+    dot.className = 'pg-status-dot ready';
+    statusText.textContent = 'Database ready — ' + PG_TABLES.length + ' tables loaded';
+  } catch(err){
+    loadingMsg.textContent = 'Error: ' + err.message;
+    loadingBar.style.background = '#c0392b';
+    dot.className = 'pg-status-dot error';
+    statusText.textContent = 'Failed to load database';
+    console.error('[Playground] DB load error:', err);
+  }
+}
+
+function pgRenderTableChips(){
+  const container = document.getElementById('pg-table-chips');
+  if(!container) return;
+  container.innerHTML = PG_TABLES.map(t =>
+    `<span class="pg-table-chip mono" onclick="pgShowTableDetail('${t.name}')">${t.name}</span>`
+  ).join('');
+}
+
+function pgInsertTable(tableName){
+  const ed = document.getElementById('pg-editor');
+  const cur = ed.selectionStart;
+  const val = ed.value;
+  ed.value = val.slice(0, cur) + tableName + val.slice(cur);
+  ed.selectionStart = ed.selectionEnd = cur + tableName.length;
+  ed.focus();
+}
+
+function pgShowTableDetail(tableName){
+  const t = PG_TABLES.find(x => x.name === tableName);
+  if(!t) return;
+  const cols = t.cols.split(', ');
+  const overlay = document.getElementById('pg-modal-overlay');
+  document.getElementById('pg-modal-title').textContent = tableName;
+  document.getElementById('pg-modal-subtitle').textContent = cols.length + ' columns';
+
+  // Build column pills
+  let html = '<div class="pg-modal-section-label mono">COLUMNS</div>';
+  html += '<div class="pg-col-grid">' + cols.map(c => `<span class="pg-col-pill">${pgEsc(c)}</span>`).join('') + '</div>';
+
+  // Sample rows — only available once DB is loaded
+  if(pgReady && pgDB){
+    try {
+      const result = pgDB.exec(`SELECT * FROM "${tableName}" LIMIT 5`);
+      if(result && result.length > 0){
+        const {columns, values} = result[0];
+        html += '<div class="pg-modal-section-label mono">SAMPLE DATA (first 5 rows)</div>';
+        html += '<div style="overflow-x:auto"><table class="pg-table" style="margin:0"><thead><tr>';
+        columns.forEach(c => { html += `<th class="mono">${pgEsc(c)}</th>`; });
+        html += '</tr></thead><tbody>';
+        values.forEach(row => {
+          html += '<tr>';
+          row.forEach(cell => {
+            if(cell === null || cell === undefined) html += '<td><span class="pg-null-cell">NULL</span></td>';
+            else html += `<td title="${pgEsc(String(cell))}">${pgEsc(String(cell))}</td>`;
+          });
+          html += '</tr>';
+        });
+        html += '</tbody></table></div>';
+      }
+    } catch(e){ /* silently skip sample if error */ }
+  } else {
+    html += '<div style="padding:12px 18px;font-size:12px;color:var(--gray)">Load the database to see sample rows.</div>';
+  }
+
+  html += `<div style="padding:12px 18px 16px"><button class="pg-modal-use-btn mono" onclick="pgCloseModal();pgInsertTable('${tableName}')">Insert table name into editor ↗</button></div>`;
+
+  document.getElementById('pg-modal-body').innerHTML = html;
+  overlay.classList.add('visible');
+}
+
+function pgCloseModal(){
+  document.getElementById('pg-modal-overlay').classList.remove('visible');
+}
+
+function pgHandleKey(e){
+  if((e.ctrlKey || e.metaKey) && e.key === 'Enter'){
+    e.preventDefault();
+    pgRun();
+    return;
+  }
+  if(e.key === 'Tab'){
+    e.preventDefault();
+    const ed = e.target;
+    const s = ed.selectionStart, en = ed.selectionEnd;
+    ed.value = ed.value.slice(0,s) + '  ' + ed.value.slice(en);
+    ed.selectionStart = ed.selectionEnd = s + 2;
+  }
+}
+
+function pgClear(){
+  document.getElementById('pg-editor').value = '';
+  document.getElementById('pg-results-body').innerHTML = '<div class="pg-placeholder">Run a query to see results here.</div>';
+  document.getElementById('pg-results-count').style.display = 'none';
+  document.getElementById('pg-results-time').style.display = 'none';
+  document.getElementById('pg-rows-meta').style.display = 'none';
+  document.getElementById('pg-time-meta').style.display = 'none';
+}
+
+function pgRun(){
+  if(!pgReady || !pgDB){ alert('Database is still loading. Please wait.'); return; }
+  const sql = document.getElementById('pg-editor').value.trim();
+  if(!sql) return;
+  const runBtn = document.getElementById('pg-run-btn');
+  const dot = document.getElementById('pg-status-dot');
+  const statusText = document.getElementById('pg-status-text');
+  runBtn.disabled = true;
+  dot.className = 'pg-status-dot loading';
+  statusText.textContent = 'Running...';
+  setTimeout(() => {
+    const t0 = performance.now();
+    try {
+      const results = pgDB.exec(sql);
+      const elapsed = parseFloat((performance.now() - t0).toFixed(1));
+      pgRenderResults(results, elapsed);
+      dot.className = 'pg-status-dot ready';
+      statusText.textContent = 'Query complete';
+      const rowCount = results && results.length > 0 ? results.reduce((s,r) => s + r.values.length, 0) : 0;
+      pgAddHistory(sql, elapsed, rowCount, null);
+    } catch(err){
+      const elapsed = parseFloat((performance.now() - t0).toFixed(1));
+      pgRenderError(err.message);
+      dot.className = 'pg-status-dot error';
+      statusText.textContent = 'Query error';
+      pgAddHistory(sql, elapsed, null, err.message);
+    } finally {
+      runBtn.disabled = false;
+    }
+  }, 10);
+}
+
+// ===== QUERY HISTORY =====
+let pgHistory = JSON.parse(localStorage.getItem('ssq_pg_history') || '[]');
+
+function pgSummarizeQuery(sql){
+  // Produce a plain-English one-liner describing what the query does
+  const s = sql.replace(/\s+/g,' ').trim();
+  const upper = s.toUpperCase();
+
+  // Extract the first table name after FROM
+  const fromMatch = s.match(/FROM\s+["']?(\w+)["']?/i);
+  const table = fromMatch ? fromMatch[1] : null;
+  const tableNice = table ? table.replace(/_/g,' ') : null;
+
+  // Detect key clauses
+  const hasWhere   = /\bWHERE\b/i.test(s);
+  const hasGroup   = /\bGROUP BY\b/i.test(s);
+  const hasOrder   = /\bORDER BY\b/i.test(s);
+  const hasLimit   = /\bLIMIT\b/i.test(s);
+  const hasJoin    = /\bJOIN\b/i.test(s);
+  const hasAgg     = /\b(COUNT|SUM|AVG|MAX|MIN)\s*\(/i.test(s);
+  const hasWith    = /^\s*WITH\b/i.test(s);
+  const isSelect   = /^\s*(WITH\b.*)?SELECT\b/i.test(s);
+
+  // Extract SELECT columns (rough)
+  const selMatch = s.match(/SELECT\s+(.*?)\s+FROM/i);
+  const selPart = selMatch ? selMatch[1].trim() : '';
+  const isStar = selPart === '*' || selPart.endsWith('.*');
+
+  // What are they selecting?
+  let what = isStar ? 'all columns' : (selPart.length < 60 ? selPart : 'selected columns');
+
+  // Build summary sentence
+  if(!isSelect){
+    // Non-SELECT: just echo first few words
+    return s.slice(0,80) + (s.length > 80 ? '…' : '');
+  }
+
+  let parts = [];
+  if(hasAgg && hasGroup) parts.push('aggregated data');
+  else if(hasAgg) parts.push('calculated aggregate values');
+  else parts.push('fetched ' + what);
+
+  if(tableNice) parts.push('from ' + tableNice);
+  if(hasJoin)   parts.push('with a join');
+  if(hasWhere)  parts.push('with filters');
+  if(hasGroup)  parts.push('grouped');
+  if(hasOrder)  parts.push('sorted');
+  if(hasLimit){
+    const limMatch = s.match(/LIMIT\s+(\d+)/i);
+    if(limMatch) parts.push('limited to ' + limMatch[1] + ' rows');
+  }
+  if(hasWith)   parts.unshift('CTE query —');
+
+  let summary = parts.join(' ');
+  return summary.charAt(0).toUpperCase() + summary.slice(1);
+}
+
+function pgAddHistory(sql, elapsed, rowCount, errorMsg){
+  const now = new Date();
+  const entry = {
+    ts: now.toISOString(),
+    sql: sql,
+    summary: pgSummarizeQuery(sql),
+    elapsed,
+    rowCount,
+    error: errorMsg || null
+  };
+  pgHistory.unshift(entry); // newest first
+  if(pgHistory.length > 50) pgHistory = pgHistory.slice(0, 50); // cap at 50
+  localStorage.setItem('ssq_pg_history', JSON.stringify(pgHistory));
+  pgRenderHistory();
+}
+
+function pgRenderHistory(){
+  const body = document.getElementById('pg-history-body');
+  const empty = document.getElementById('pg-history-empty');
+  if(!body) return;
+  if(pgHistory.length === 0){
+    if(empty) empty.style.display = '';
+    // Remove any existing items
+    body.querySelectorAll('.pg-history-item').forEach(el => el.remove());
+    return;
+  }
+  if(empty) empty.style.display = 'none';
+
+  // Re-render all items
+  const existing = body.querySelectorAll('.pg-history-item');
+  existing.forEach(el => el.remove());
+
+  pgHistory.forEach((entry, idx) => {
+    const d = new Date(entry.ts);
+    const dateStr = d.toLocaleDateString('en-US', {month:'short', day:'numeric', year:'numeric'});
+    const timeStr = d.toLocaleTimeString('en-US', {hour:'numeric', minute:'2-digit', second:'2-digit', hour12:true});
+
+    const isError = !!entry.error;
+    const metaText = isError
+      ? '<span style="color:#c0392b">Error</span>'
+      : (entry.rowCount !== null ? entry.rowCount + ' row' + (entry.rowCount === 1 ? '' : 's') + ' · ' + entry.elapsed.toFixed(1) + 'ms' : entry.elapsed.toFixed(1) + 'ms');
+
+    const item = document.createElement('div');
+    item.className = 'pg-history-item';
+    item.innerHTML = `
+      <div class="pg-history-time mono">${dateStr}<br>${timeStr}</div>
+      <div>
+        <div class="pg-history-summary">${pgEsc(entry.summary)}</div>
+        <div class="pg-history-sql mono">${pgEsc(entry.sql.replace(/\n/g,' '))}</div>
+      </div>
+      <div class="pg-history-meta">
+        ${metaText}
+        <span class="pg-history-rerun" onclick="pgRerunHistory(${idx})">Re-run ↗</span>
+      </div>`;
+    body.appendChild(item);
+  });
+}
+
+function pgRerunHistory(idx){
+  const entry = pgHistory[idx];
+  if(!entry) return;
+  document.getElementById('pg-editor').value = entry.sql;
+  pgRun();
+  // Scroll to top so user sees results
+  document.getElementById('pg-editor').scrollIntoView({behavior:'smooth', block:'center'});
+}
+
+function pgToggleHistory(){
+  const body = document.getElementById('pg-history-body');
+  const caret = document.getElementById('pg-history-caret');
+  const isOpen = body.classList.contains('open');
+  body.classList.toggle('open', !isOpen);
+  caret.classList.toggle('open', !isOpen);
+}
+
+function pgClearHistory(e){
+  e.stopPropagation(); // don't also toggle the section
+  pgHistory = [];
+  localStorage.removeItem('ssq_pg_history');
+  pgRenderHistory();
+}
+
+function pgRenderResults(results, elapsed){
+  const body = document.getElementById('pg-results-body');
+  const countEl = document.getElementById('pg-results-count');
+  const timeEl = document.getElementById('pg-results-time');
+  const rowsMeta = document.getElementById('pg-rows-meta');
+  const timeMeta = document.getElementById('pg-time-meta');
+  if(!results || results.length === 0){
+    body.innerHTML = '<div class="pg-placeholder">Query ran successfully — no rows returned.</div>';
+    countEl.style.display = 'none'; timeEl.style.display = 'none';
+    rowsMeta.style.display = 'none'; timeMeta.style.display = 'none';
+    return;
+  }
+  let html = ''; let totalRows = 0;
+  const MAX_ROWS = 1000;
+  results.forEach((result, idx) => {
+    const {columns, values} = result;
+    totalRows += values.length;
+    if(results.length > 1) html += `<div style="padding:6px 12px;font-size:10px;color:var(--gray);font-weight:700;letter-spacing:1px;background:var(--light-bg)">RESULT SET ${idx+1}</div>`;
+    html += '<table class="pg-table"><thead><tr>';
+    columns.forEach(col => { html += `<th class="mono">${pgEsc(col)}</th>`; });
+    html += '</tr></thead><tbody>';
+    values.slice(0, MAX_ROWS).forEach(row => {
+      html += '<tr>';
+      row.forEach(cell => {
+        if(cell === null || cell === undefined) html += '<td><span class="pg-null-cell">NULL</span></td>';
+        else html += `<td title="${pgEsc(String(cell))}">${pgEsc(String(cell))}</td>`;
+      });
+      html += '</tr>';
+    });
+    html += '</tbody></table>';
+    if(values.length > MAX_ROWS) html += `<div style="padding:8px 12px;font-size:11px;color:var(--gray);background:var(--light-bg)">Showing first ${MAX_ROWS} of ${values.length} rows.</div>`;
+  });
+  body.innerHTML = html;
+  countEl.textContent = totalRows + (totalRows === 1 ? ' row' : ' rows');
+  countEl.style.display = '';
+  timeEl.textContent = elapsed.toFixed(1) + 'ms';
+  timeEl.style.display = '';
+  document.getElementById('pg-row-count').textContent = totalRows;
+  rowsMeta.style.display = '';
+  document.getElementById('pg-exec-time').textContent = elapsed.toFixed(1) + 'ms';
+  timeMeta.style.display = '';
+}
+
+function pgRenderError(message){
+  document.getElementById('pg-results-body').innerHTML = `<div class="pg-error-box">Error: ${pgEsc(message)}</div>`;
+  document.getElementById('pg-results-count').style.display = 'none';
+  document.getElementById('pg-results-time').style.display = 'none';
+  document.getElementById('pg-rows-meta').style.display = 'none';
+  document.getElementById('pg-time-meta').style.display = 'none';
+}
+
+function pgEsc(s){
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
 // ===== INIT =====
-renderModuleGrid();updateGlobal();
+renderModuleGrid();updateGlobal();pgRenderHistory();
 </script>
 </body>
 </html>
