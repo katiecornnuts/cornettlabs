@@ -6,6 +6,7 @@
 <title>Learn SQL with Survivor</title>
 <link href="https://fonts.googleapis.com/css2?family=Newsreader:opsz,wght@6..72,300;6..72,400;6..72,600;6..72,700&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/sql.js/1.10.3/sql-wasm.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.2/dist/chart.umd.min.js"></script>
 <style>
 @font-face {
   font-family: 'Survivant';
@@ -93,7 +94,12 @@ h2{font-size:24px;color:var(--torch);margin-bottom:6px}
 .check-btn.done{border-color:var(--jungle);background:var(--jungle)}
 .question{font-size:14px;line-height:1.6;color:#3a3228;margin-bottom:10px}
 .table-tags{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:12px}
-.table-tag{font-size:10px;font-weight:600;padding:2px 8px;border-radius:5px;background:#f0ebe2;color:#8a7060;border:1px solid #e0d4c4}
+.table-tag{font-size:10px;font-weight:600;padding:2px 8px;border-radius:5px;background:#f0ebe2;color:#8a7060;border:1px solid #e0d4c4;position:relative;cursor:help}
+.table-tag:hover .table-tag-cols{display:block}
+.table-tag-cols{display:none;position:absolute;top:calc(100% + 6px);left:0;z-index:200;background:#1a1612;border:1px solid #4a4038;border-radius:7px;padding:8px 12px;min-width:220px;max-width:340px;box-shadow:0 6px 20px rgba(0,0,0,.4)}
+.table-tag-cols .ttc-name{font-size:9px;font-weight:700;color:var(--torch);letter-spacing:1px;margin-bottom:6px}
+.table-tag-cols .ttc-cols{display:flex;flex-wrap:wrap;gap:4px}
+.table-tag-cols .ttc-col{font-size:10px;background:#2a2218;color:#c4b8a8;padding:2px 7px;border-radius:4px;font-family:'JetBrains Mono',monospace;white-space:nowrap}
 .editor-label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--gray);margin-bottom:5px}
 .sql-editor{width:100%;min-height:70px;padding:10px 12px;font-size:12px;line-height:1.6;background:#faf8f5;border:1px solid var(--border);border-radius:7px;resize:vertical;color:var(--dark);outline:none}
 .sql-editor:focus{border-color:var(--torch);box-shadow:0 0 0 3px rgba(212,97,30,.1)}
@@ -290,6 +296,79 @@ header,nav,main,footer{position:relative;z-index:1}
 .pg-modal-use-btn{margin:0 18px 14px;padding:7px 16px;border-radius:6px;border:none;background:var(--torch);color:var(--white);font-size:12px;font-weight:700;cursor:pointer;font-family:'JetBrains Mono',monospace;display:inline-block}
 .pg-modal-use-btn:hover{background:#c0551a}
 
+/* ===== FINAL TRIBAL COUNCIL ===== */
+.ftc-hero{text-align:center;padding:36px 24px 20px;background:linear-gradient(180deg,#0d0a06,#1a1208);border:1px solid #3a2e1e;border-radius:16px;margin-bottom:20px}
+.ftc-torches{font-size:32px;margin-bottom:12px;letter-spacing:4px;animation:flicker 2s ease-in-out infinite alternate}
+.ftc-title{font-size:38px;color:var(--torch);margin-bottom:10px;text-shadow:0 0 30px rgba(212,97,30,.5)}
+.ftc-subtitle{font-size:15px;color:#c4b8a8;line-height:1.7;max-width:580px;margin:0 auto}
+.ftc-ribbon{display:flex;align-items:center;gap:6px;margin-bottom:28px;padding:14px 20px;background:#1a1612;border-radius:10px;border:1px solid #3a3228;overflow-x:auto}
+.ftc-ribbon-item{display:flex;align-items:center;gap:8px;padding:6px 12px;border-radius:7px;transition:background .2s;white-space:nowrap}
+.ftc-ribbon-item.active{background:#2e6b47}
+.ftc-ribbon-item.done{background:#1e4a2a}
+.ftc-step-num{width:22px;height:22px;border-radius:50%;background:#3a3228;color:#6a6258;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;font-family:'JetBrains Mono',monospace;flex-shrink:0}
+.ftc-ribbon-item.active .ftc-step-num{background:var(--torch);color:#fff}
+.ftc-ribbon-item.done .ftc-step-num{background:var(--jungle);color:#fff}
+.ftc-step-label{font-size:12px;font-weight:600;color:#6a6258;letter-spacing:.3px}
+.ftc-ribbon-item.active .ftc-step-label,.ftc-ribbon-item.done .ftc-step-label{color:#e8dfd4}
+.ftc-ribbon-arrow{color:#3a3228;font-size:18px;font-weight:700;flex-shrink:0}
+.ftc-loading-msg{padding:30px;text-align:center}
+.ftc-phase{margin-bottom:28px}
+.ftc-phase-header{margin-bottom:18px;background:#1a1612;border:1px solid #3a3228;border-radius:12px;padding:18px 22px}
+.ftc-phase-badge{font-size:10px;font-weight:700;color:var(--torch);letter-spacing:2px;display:block;margin-bottom:6px}
+.ftc-phase-title{font-size:22px;color:#e8dfd4;margin-bottom:6px}
+.ftc-phase-desc{font-size:14px;color:#a09080;line-height:1.7;max-width:680px}
+.ftc-challenge-card{background:var(--white);border:1px solid var(--border);border-radius:14px;padding:22px;box-shadow:0 2px 10px rgba(0,0,0,.05)}
+.ftc-challenge-label{font-size:10px;font-weight:700;color:var(--torch);letter-spacing:1.5px;margin-bottom:8px}
+.ftc-challenge-text{font-size:14px;color:#3a3228;line-height:1.7;margin-bottom:14px}
+.ftc-prompt-chips{display:flex;flex-wrap:wrap;gap:7px;margin-bottom:14px}
+.ftc-prompt-chip{padding:6px 13px;border-radius:20px;border:1px solid var(--border);background:var(--light-bg);color:#5a5248;font-size:12px;font-weight:600;cursor:pointer;transition:all .2s;font-family:inherit}
+.ftc-prompt-chip:hover{border-color:var(--torch);background:#fef4ec;color:var(--torch)}
+.ftc-editor-wrap{margin-bottom:12px}
+.ftc-editor-hdr{background:#1a1612;padding:9px 14px;border-radius:7px 7px 0 0;display:flex;justify-content:space-between;align-items:center}
+.ftc-editor-label{font-size:10px;font-weight:700;color:var(--torch);letter-spacing:1.5px}
+.ftc-editor{width:100%;min-height:100px;padding:12px 14px;font-size:12px;line-height:1.7;background:#1a1612;border:none;border-top:1px solid #3a3228;color:#e8dfd4;resize:vertical;outline:none;font-family:'JetBrains Mono','Fira Code',monospace;border-radius:0 0 7px 7px}
+.ftc-editor:focus{border-top-color:var(--torch)}
+.ftc-run-btn{padding:6px 16px;border-radius:6px;border:none;background:var(--torch);color:#fff;font-size:12px;font-weight:700;cursor:pointer;transition:background .2s}
+.ftc-run-btn:hover{background:#c0551a}
+.ftc-run-btn:disabled{background:#5a4a3a;color:#6a6258;cursor:not-allowed}
+.ftc-clear-btn{padding:6px 12px;border-radius:6px;border:1px solid #4a4038;background:transparent;color:#8a7e70;font-size:12px;cursor:pointer}
+.ftc-results-area{margin-top:10px;background:#1a1612;border:1px solid #3a3228;border-radius:8px;overflow:hidden;max-height:260px;overflow-y:auto}
+.ftc-table{width:100%;border-collapse:collapse;font-size:12px}
+.ftc-table th{background:#0e0c0a;color:var(--torch);font-weight:700;font-size:10px;letter-spacing:.8px;padding:7px 12px;text-align:left;position:sticky;top:0;white-space:nowrap;border-bottom:1px solid #3a3228}
+.ftc-table td{padding:6px 12px;border-bottom:1px solid #2a2218;color:#c4b8a8;white-space:nowrap;max-width:260px;overflow:hidden;text-overflow:ellipsis}
+.ftc-table tr:nth-child(even) td{background:#141210}
+.ftc-error-box{padding:12px 16px;background:#1a0c0c;border-left:4px solid #c0392b;font-family:'JetBrains Mono',monospace;font-size:12px;color:#e87878;white-space:pre-wrap;word-break:break-word}
+.ftc-chart-area{margin-top:16px;background:var(--light-bg);border:1px solid var(--border);border-radius:10px;padding:16px}
+.ftc-chart-controls{margin-bottom:14px}
+.ftc-chart-type-btn{padding:6px 13px;border-radius:20px;border:1px solid var(--border);background:var(--white);color:#5a5248;font-size:12px;font-weight:600;cursor:pointer;transition:all .2s;font-family:inherit}
+.ftc-chart-type-btn.active{border-color:var(--torch);background:#fef4ec;color:var(--torch)}
+.ftc-col-select{padding:5px 10px;border-radius:6px;border:1px solid var(--border);background:var(--white);font-size:12px;color:var(--dark);font-family:'JetBrains Mono',monospace;outline:none;cursor:pointer}
+.ftc-title-input{padding:5px 10px;border-radius:6px;border:1px solid var(--border);background:var(--white);font-size:12px;color:var(--dark);font-family:inherit;outline:none;min-width:180px}
+.ftc-canvas-wrap{background:#fff;border-radius:10px;padding:16px;position:relative;min-height:320px;border:2px solid var(--border)}
+.ftc-canvas-wrap canvas{max-height:400px}
+.ftc-save-btn{padding:9px 20px;border-radius:8px;border:1px solid var(--jungle);background:transparent;color:var(--jungle);font-size:13px;font-weight:600;cursor:pointer;transition:all .2s;font-family:inherit}
+.ftc-save-btn:hover{background:var(--jungle);color:#fff}
+.ftc-next-btn{padding:9px 20px;border-radius:8px;border:none;background:var(--torch);color:#fff;font-size:13px;font-weight:600;cursor:pointer;transition:background .2s;font-family:inherit}
+.ftc-next-btn:hover{background:#c0551a}
+/* Jury question cards */
+.ftc-jury-card{background:var(--white);border:1px solid var(--border);border-radius:12px;padding:20px;margin-bottom:14px;transition:border-color .2s}
+.ftc-jury-card.solved{border:2px solid var(--jungle);background:#f0faf2}
+.ftc-jury-juror{display:flex;align-items:center;gap:10px;margin-bottom:12px}
+.ftc-juror-avatar{font-size:28px;width:44px;height:44px;display:flex;align-items:center;justify-content:center;background:#1a1612;border-radius:50%;border:2px solid #4a4038}
+.ftc-juror-name{font-size:13px;font-weight:700;color:var(--dark)}
+.ftc-juror-role{font-size:10px;color:var(--gray);letter-spacing:.5px}
+.ftc-jury-q{font-size:14px;color:#3a3228;line-height:1.7;margin-bottom:12px;font-style:italic}
+.ftc-jury-hint{font-size:12px;color:#8a7060;background:#fdf5e0;padding:7px 11px;border-radius:6px;border-left:3px solid #e0c97a;margin-bottom:10px}
+.ftc-jury-feedback{margin-top:8px;padding:9px 13px;border-radius:7px;font-size:13px}
+.ftc-jury-feedback.correct{background:#eaf5ec;border-left:3px solid var(--jungle);color:#1a5a2a}
+.ftc-jury-feedback.incorrect{background:#fef0ee;border-left:3px solid #c0392b;color:#7a1a1a}
+/* Winner card */
+.ftc-winner-card{background:linear-gradient(135deg,#1a1612,#2a1808);border:2px solid var(--torch);border-radius:16px;padding:36px;text-align:center;margin-top:20px;box-shadow:0 0 40px rgba(212,97,30,.2)}
+.ftc-winner-flames{font-size:36px;margin-bottom:16px;animation:flicker 1.5s ease-in-out infinite alternate}
+.ftc-winner-label{font-size:10px;font-weight:700;color:var(--torch);letter-spacing:3px;margin-bottom:8px}
+.ftc-winner-name{font-size:28px;font-weight:700;color:#e8dfd4;margin-bottom:14px;font-family:'Survivant',Georgia,serif}
+.ftc-winner-msg{font-size:14px;color:#8a7e70;line-height:1.7;max-width:480px;margin:0 auto}
+
 /* Query history */
 .pg-history-section{margin-top:20px;border:1px solid #3a3228;border-radius:12px;overflow:hidden}
 .pg-history-toggle{width:100%;background:#1a1612;border:none;padding:11px 16px;display:flex;align-items:center;justify-content:space-between;cursor:pointer;text-align:left}
@@ -338,6 +417,7 @@ header,nav,main,footer{position:relative;z-index:1}
     <button class="nav-btn mono" data-tab="tables" onclick="switchTab('tables')">Database Tables</button>
     <button class="nav-btn mono" data-tab="cheatsheet" onclick="switchTab('cheatsheet')">Cheat Sheet</button>
     <button class="nav-btn mono" data-tab="playground" onclick="switchTab('playground')">Query Playground</button>
+    <button class="nav-btn mono" data-tab="finale" onclick="switchTab('finale')" style="color:#d4611e;border-bottom-color:transparent">🔥 Final Tribal Council</button>
     <div style="flex:1"></div>
     <button class="api-gear" onclick="toggleApiBar()" title="AI Tutor Settings">⚙️</button>
   </div>
@@ -409,6 +489,167 @@ header,nav,main,footer{position:relative;z-index:1}
         </div>
       </div>
     </div>
+  </div>
+  <!-- Final Tribal Council Tab -->
+  <div id="tab-finale" class="hidden">
+    <div class="ftc-hero">
+      <div class="ftc-torches" aria-hidden="true">🔥&nbsp;&nbsp;&nbsp;🔥&nbsp;&nbsp;&nbsp;🔥</div>
+      <h2 class="ftc-title" style="font-family:'Survivant',Georgia,serif">Final Tribal Council</h2>
+      <p class="ftc-subtitle">You've made it to the end. Now prove you deserve the million.<br>Write real SQL. Build real charts. Make your case to the jury.</p>
+    </div>
+
+    <!-- Progress ribbon -->
+    <div class="ftc-ribbon" id="ftc-ribbon">
+      <div class="ftc-ribbon-item" id="ftc-step-1"><span class="ftc-step-num">1</span><span class="ftc-step-label">Opening Statement</span></div>
+      <div class="ftc-ribbon-arrow">›</div>
+      <div class="ftc-ribbon-item" id="ftc-step-2"><span class="ftc-step-num">2</span><span class="ftc-step-label">Jury Questions</span></div>
+      <div class="ftc-ribbon-arrow">›</div>
+      <div class="ftc-ribbon-item" id="ftc-step-3"><span class="ftc-step-num">3</span><span class="ftc-step-label">The Vote</span></div>
+      <div class="ftc-ribbon-arrow">›</div>
+      <div class="ftc-ribbon-item" id="ftc-step-4"><span class="ftc-step-num">4</span><span class="ftc-step-label">Reading the Votes</span></div>
+    </div>
+
+    <div id="ftc-loading" class="ftc-loading-msg hidden">
+      <span style="font-size:28px;animation:spin 2s linear infinite;display:inline-block">🔥</span>
+      <span style="margin-left:10px;color:#8a7e70;font-size:14px">Loading Survivor database...</span>
+    </div>
+
+    <!-- PHASE 1: Opening Statement -->
+    <div class="ftc-phase" id="ftc-phase-1">
+      <div class="ftc-phase-header">
+        <span class="ftc-phase-badge mono">PHASE 1</span>
+        <h3 class="ftc-phase-title">Opening Statement</h3>
+        <p class="ftc-phase-desc">Before the jury asks their questions, you give your opening argument. Choose a Survivor story to investigate, write your first SQL query, and visualize the result.</p>
+      </div>
+      <div class="ftc-challenge-card">
+        <div class="ftc-challenge-label mono">YOUR OPENING ARGUMENT</div>
+        <p class="ftc-challenge-text">Choose a story from Survivor history to tell with data. Write a SQL query that sets up your argument — who dominated? What era peaked? Which tribe crushed it?</p>
+        <div class="ftc-prompt-chips">
+          <button class="ftc-prompt-chip" onclick="ftcLoadPrompt(1,'SELECT season, season_name, winner, n_cast\nFROM season_summary\nORDER BY season;')">🏆 Season Overview</button>
+          <button class="ftc-prompt-chip" onclick="ftcLoadPrompt(1,'SELECT castaway, COUNT(*) AS seasons_played\nFROM castaways\nGROUP BY castaway\nHAVING COUNT(*) > 1\nORDER BY seasons_played DESC\nLIMIT 15;')">🔁 Return Players</button>
+          <button class="ftc-prompt-chip" onclick="ftcLoadPrompt(1,'SELECT season, AVG(imdb_rating) AS avg_rating\nFROM episodes\nGROUP BY season\nORDER BY avg_rating DESC\nLIMIT 10;')">⭐ Best Seasons</button>
+          <button class="ftc-prompt-chip" onclick="ftcLoadPrompt(1,'SELECT season, episode_title, viewers\nFROM episodes\nORDER BY viewers DESC\nLIMIT 10;')">📺 Most Watched</button>
+        </div>
+        <div class="ftc-editor-wrap">
+          <div class="ftc-editor-hdr">
+            <span class="ftc-editor-label mono">YOUR SQL</span>
+            <div style="display:flex;gap:6px">
+              <button class="ftc-clear-btn mono" onclick="ftcClear(1)">Clear</button>
+              <button class="ftc-run-btn mono" id="ftc-run-1" onclick="ftcRun(1)">▶ Run Query</button>
+            </div>
+          </div>
+          <textarea class="ftc-editor mono" id="ftc-editor-1" spellcheck="false" placeholder="-- Write your opening SQL statement here..."></textarea>
+        </div>
+        <div class="ftc-results-area hidden" id="ftc-results-1"></div>
+        <div class="ftc-chart-area hidden" id="ftc-chart-area-1">
+          <div class="ftc-chart-controls">
+            <span class="ftc-editor-label mono">CHART TYPE</span>
+            <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:6px">
+              <button class="ftc-chart-type-btn active" data-phase="1" data-type="bar" onclick="ftcSetChartType(1,'bar',this)">📊 Bar</button>
+              <button class="ftc-chart-type-btn" data-phase="1" data-type="line" onclick="ftcSetChartType(1,'line',this)">📈 Line</button>
+              <button class="ftc-chart-type-btn" data-phase="1" data-type="horizontalBar" onclick="ftcSetChartType(1,'horizontalBar',this)">↔ Horizontal Bar</button>
+              <button class="ftc-chart-type-btn" data-phase="1" data-type="doughnut" onclick="ftcSetChartType(1,'doughnut',this)">🍩 Doughnut</button>
+            </div>
+            <div style="margin-top:10px;display:flex;gap:8px;flex-wrap:wrap;align-items:center">
+              <span class="ftc-editor-label mono">X AXIS</span>
+              <select class="ftc-col-select" id="ftc-xcol-1" onchange="ftcRenderChart(1)"></select>
+              <span class="ftc-editor-label mono">Y AXIS</span>
+              <select class="ftc-col-select" id="ftc-ycol-1" onchange="ftcRenderChart(1)"></select>
+              <span class="ftc-editor-label mono">CHART TITLE</span>
+              <input class="ftc-title-input" id="ftc-chart-title-1" type="text" placeholder="My Survivor Chart" oninput="ftcRenderChart(1)">
+            </div>
+          </div>
+          <div class="ftc-canvas-wrap"><canvas id="ftc-canvas-1"></canvas></div>
+          <div style="display:flex;gap:8px;margin-top:10px;flex-wrap:wrap">
+            <button class="ftc-save-btn" onclick="ftcSaveChart(1)">💾 Save Chart as PNG</button>
+            <button class="ftc-next-btn" onclick="ftcAdvance(2)">Continue to Jury Questions →</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- PHASE 2: Jury Questions -->
+    <div class="ftc-phase hidden" id="ftc-phase-2">
+      <div class="ftc-phase-header">
+        <span class="ftc-phase-badge mono">PHASE 2</span>
+        <h3 class="ftc-phase-title">Jury Questions</h3>
+        <p class="ftc-phase-desc">The jury grills you. Each question demands a specific SQL technique. Answer all three to move on.</p>
+      </div>
+      <div id="ftc-jury-questions"></div>
+      <div style="margin-top:16px" id="ftc-jury-advance" class="hidden">
+        <button class="ftc-next-btn" onclick="ftcAdvance(3)">All questions answered — Cast Your Vote →</button>
+      </div>
+    </div>
+
+    <!-- PHASE 3: The Vote — Free-form final chart -->
+    <div class="ftc-phase hidden" id="ftc-phase-3">
+      <div class="ftc-phase-header">
+        <span class="ftc-phase-badge mono">PHASE 3</span>
+        <h3 class="ftc-phase-title">The Vote</h3>
+        <p class="ftc-phase-desc">This is your closing argument. Write any SQL query you want, build a chart that tells a compelling story about Survivor data, and save it. This is your vote for who deserves the million.</p>
+      </div>
+      <div class="ftc-challenge-card">
+        <div class="ftc-challenge-label mono">YOUR FINAL ARGUMENT — FREE CHOICE</div>
+        <p class="ftc-challenge-text">What's the most interesting thing you can find in this data? Go complex — use CTEs, JOINs, window functions, whatever you've learned. Then turn it into a chart worthy of a finale.</p>
+        <div class="ftc-editor-wrap">
+          <div class="ftc-editor-hdr">
+            <span class="ftc-editor-label mono">YOUR SQL</span>
+            <div style="display:flex;gap:6px">
+              <button class="ftc-clear-btn mono" onclick="ftcClear(3)">Clear</button>
+              <button class="ftc-run-btn mono" id="ftc-run-3" onclick="ftcRun(3)">▶ Run Query</button>
+            </div>
+          </div>
+          <textarea class="ftc-editor mono" id="ftc-editor-3" spellcheck="false" placeholder="-- Your final, most impressive query...&#10;-- Use CTEs, JOINs, window functions — show everything you've learned."></textarea>
+        </div>
+        <div class="ftc-results-area hidden" id="ftc-results-3"></div>
+        <div class="ftc-chart-area hidden" id="ftc-chart-area-3">
+          <div class="ftc-chart-controls">
+            <span class="ftc-editor-label mono">CHART TYPE</span>
+            <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:6px">
+              <button class="ftc-chart-type-btn active" data-phase="3" data-type="bar" onclick="ftcSetChartType(3,'bar',this)">📊 Bar</button>
+              <button class="ftc-chart-type-btn" data-phase="3" data-type="line" onclick="ftcSetChartType(3,'line',this)">📈 Line</button>
+              <button class="ftc-chart-type-btn" data-phase="3" data-type="horizontalBar" onclick="ftcSetChartType(3,'horizontalBar',this)">↔ Horizontal Bar</button>
+              <button class="ftc-chart-type-btn" data-phase="3" data-type="doughnut" onclick="ftcSetChartType(3,'doughnut',this)">🍩 Doughnut</button>
+            </div>
+            <div style="margin-top:10px;display:flex;gap:8px;flex-wrap:wrap;align-items:center">
+              <span class="ftc-editor-label mono">X AXIS</span>
+              <select class="ftc-col-select" id="ftc-xcol-3" onchange="ftcRenderChart(3)"></select>
+              <span class="ftc-editor-label mono">Y AXIS</span>
+              <select class="ftc-col-select" id="ftc-ycol-3" onchange="ftcRenderChart(3)"></select>
+              <span class="ftc-editor-label mono">CHART TITLE</span>
+              <input class="ftc-title-input" id="ftc-chart-title-3" type="text" placeholder="My Final Argument" oninput="ftcRenderChart(3)">
+            </div>
+          </div>
+          <div class="ftc-canvas-wrap"><canvas id="ftc-canvas-3"></canvas></div>
+          <div style="display:flex;gap:8px;margin-top:10px;flex-wrap:wrap">
+            <button class="ftc-save-btn" onclick="ftcSaveChart(3)">💾 Save Chart as PNG</button>
+            <button class="ftc-next-btn" onclick="ftcAdvance(4)">Read the Votes →</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- PHASE 4: Reading the Votes -->
+    <div class="ftc-phase hidden" id="ftc-phase-4">
+      <div class="ftc-phase-header" style="text-align:center">
+        <div style="font-size:52px;margin-bottom:12px">🔥</div>
+        <span class="ftc-phase-badge mono">PHASE 4</span>
+        <h3 class="ftc-phase-title" style="font-family:'Survivant',Georgia,serif;font-size:32px">The Tribe Has Spoken.</h3>
+        <p class="ftc-phase-desc" style="max-width:560px;margin:0 auto">You've made it through Final Tribal Council. You wrote real SQL. You built real charts. You told a story with data.<br><br>That's the whole game.</p>
+      </div>
+      <div class="ftc-winner-card">
+        <div class="ftc-winner-flames">🔥🔥🔥</div>
+        <div class="ftc-winner-label mono">SOLE SURVIVOR</div>
+        <div class="ftc-winner-name" id="ftc-winner-name"></div>
+        <p class="ftc-winner-msg">You completed all capstone challenges and proved your SQL skills in front of the jury. The million dollar check is in the mail.</p>
+        <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:20px">
+          <button class="ftc-save-btn" onclick="ftcSaveChart(1)">💾 Save Opening Chart</button>
+          <button class="ftc-save-btn" onclick="ftcSaveChart(3)">💾 Save Final Chart</button>
+          <button class="ftc-next-btn" onclick="switchTab('lessons')">← Back to Lessons</button>
+        </div>
+      </div>
+    </div>
+
   </div>
   <!-- Table detail modal -->
   <div id="pg-modal-overlay" class="pg-modal-overlay" onclick="if(event.target===this)pgCloseModal()">
@@ -629,12 +870,12 @@ const CHEAT=[["SELECT","Choose columns","SELECT castaway, season"],["FROM","Spec
 // ===== LIVE PRACTICE QUESTIONS =====
 const LIVE_QUESTIONS = {
 1:[
- {id:'1.L1',title:'Explore All Seasons',compound:false,challenge:'Pull every season\'s name, location, country, and winner from <code>season_summary</code>. What pattern do you notice in the locations over time?',hint:'SELECT season_name, location, country, winner FROM season_summary — then add ORDER BY season.',answer:'SELECT season, season_name, location, country, winner\nFROM season_summary\nORDER BY season;'},
- {id:'1.L2',title:'Castaway Profiles',compound:true,challenge:'Show the full_name, gender, occupation, and personality_type from <code>castaway_details</code>. What are the most common occupations? (Uses SELECT to explore a table you haven\'t seen yet.)',hint:'SELECT full_name, gender, occupation, personality_type FROM castaway_details — add LIMIT 50 to keep it manageable.',answer:'SELECT full_name, gender, occupation, personality_type\nFROM castaway_details\nLIMIT 50;'},
+ {id:'1.L1',title:'Explore All Seasons',compound:false,challenge:'Pull every season\'s name, location, country, and winner from <code>season_summary</code>. What patterns do you notice?',hint:'SELECT season_name, location, country, winner FROM season_summary.',answer:'SELECT season_name, location, country, winner\nFROM season_summary;'},
+ {id:'1.L2',title:'Castaway Profiles',compound:true,challenge:'Show the full_name, gender, and personality_type from <code>castaway_details</code>. Try selecting different columns to explore the table.',hint:'SELECT full_name, gender, personality_type FROM castaway_details.',answer:'SELECT full_name, gender, personality_type\nFROM castaway_details;'},
 ],
 2:[
- {id:'2.L1',title:'Older Castaways',compound:false,challenge:'Find all castaways who were 60 years old or older when they played. Show their name, age, season, and city.',hint:'WHERE age >= 60 from the castaways table.',answer:'SELECT castaway, age, season, city\nFROM castaways\nWHERE age >= 60\nORDER BY age DESC;'},
- {id:'2.L2',title:'High-Rated Recent Episodes',compound:true,challenge:'Find all episodes from seasons 40 and later with an IMDB rating above 8.5. Show season, title, rating, and viewers. (Compound: WHERE with AND on two conditions.)',hint:'WHERE season >= 40 AND imdb_rating > 8.5 from the episodes table.',answer:'SELECT season, episode_title, imdb_rating, viewers\nFROM episodes\nWHERE season >= 40\n  AND imdb_rating > 8.5\nORDER BY imdb_rating DESC;'},
+ {id:'2.L1',title:'Older Castaways',compound:false,challenge:'Find all castaways who were 60 years old or older when they played. Show their name, age, season, and city.',hint:'WHERE age >= 60 from the castaways table.',answer:'SELECT castaway, age, season, city\nFROM castaways\nWHERE age >= 60;'},
+ {id:'2.L2',title:'High-Rated Recent Episodes',compound:true,challenge:'Find all episodes from seasons 40 and later with an IMDB rating above 8.5. Show season, title, rating, and viewers. (Compound: WHERE with AND on two conditions.)',hint:'WHERE season >= 40 AND imdb_rating > 8.5 from the episodes table.',answer:'SELECT season, episode_title, imdb_rating, viewers\nFROM episodes\nWHERE season >= 40\n  AND imdb_rating > 8.5;'},
 ],
 3:[
  {id:'3.L1',title:'Most Watched Episodes Ever',compound:false,challenge:'What are the 10 most-watched episodes in Survivor history? Show season, title, and viewership.',hint:'ORDER BY viewers DESC LIMIT 10 from the episodes table.',answer:'SELECT season, episode_title, viewers\nFROM episodes\nORDER BY viewers DESC\nLIMIT 10;'},
@@ -754,6 +995,75 @@ function escapeHTML(s){return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').repla
 // ===== QUERY CHECKING =====
 function normalizeSQL(s){return s.replace(/--.*$/gm,'').replace(/\s+/g,' ').replace(/[;\s]+$/,'').trim().toUpperCase();}
 
+// Check if two WHERE clauses are equivalent ignoring AND/OR condition order
+function queriesEquivalent(normUser, normAnswer) {
+  // Extract WHERE clause conditions and compare sets
+  function extractAndSortConditions(sql) {
+    // Split on WHERE, take everything after
+    const whereMatch = sql.match(/\bWHERE\b(.+?)(?:\bGROUP BY\b|\bORDER BY\b|\bHAVING\b|\bLIMIT\b|$)/);
+    if (!whereMatch) return null;
+    const clause = whereMatch[1].trim();
+    // Split on AND (not inside parentheses)
+    const conditions = splitOnTopLevelAnd(clause).map(c => {
+      // Within each AND condition, also sort OR sub-conditions
+      return splitOnTopLevelOr(c.trim()).map(s=>s.trim()).sort().join(' OR ');
+    }).sort();
+    return conditions;
+  }
+
+  function splitOnTopLevelAnd(s) {
+    const parts = []; let depth = 0, cur = '';
+    const tokens = s.split(/(\bAND\b)/i);
+    for (let i = 0; i < tokens.length; i++) {
+      if (/^AND$/i.test(tokens[i])) {
+        if (depth === 0) { parts.push(cur.trim()); cur = ''; }
+        else cur += tokens[i];
+      } else {
+        for (const ch of tokens[i]) {
+          if (ch === '(') depth++;
+          else if (ch === ')') depth--;
+          cur += ch;
+        }
+      }
+    }
+    if (cur.trim()) parts.push(cur.trim());
+    return parts;
+  }
+
+  function splitOnTopLevelOr(s) {
+    const parts = []; let depth = 0, cur = '';
+    const tokens = s.split(/(\bOR\b)/i);
+    for (let i = 0; i < tokens.length; i++) {
+      if (/^OR$/i.test(tokens[i])) {
+        if (depth === 0) { parts.push(cur.trim()); cur = ''; }
+        else cur += tokens[i];
+      } else {
+        for (const ch of tokens[i]) {
+          if (ch === '(') depth++;
+          else if (ch === ')') depth--;
+          cur += ch;
+        }
+      }
+    }
+    if (cur.trim()) parts.push(cur.trim());
+    return parts;
+  }
+
+  // Build a version of each query with sorted conditions and compare
+  function replaceWhereWithSorted(sql, sortedConds) {
+    if (!sortedConds) return sql;
+    return sql.replace(/\bWHERE\b(.+?)(?=\bGROUP BY\b|\bORDER BY\b|\bHAVING\b|\bLIMIT\b|$)/, 'WHERE ' + sortedConds.join(' AND '));
+  }
+
+  const userConds = extractAndSortConditions(normUser);
+  const answerConds = extractAndSortConditions(normAnswer);
+  if (!userConds || !answerConds) return false;
+
+  const normalizedUser = replaceWhereWithSorted(normUser, userConds);
+  const normalizedAnswer = replaceWhereWithSorted(normAnswer, answerConds);
+  return normalizedUser === normalizedAnswer;
+}
+
 function checkQuery(key, modId, scenarioId) {
   const mod = MODULES.find(m=>m.id===modId);
   const allS = [...mod.scenarios,...(mod.bonus||[])];
@@ -766,11 +1076,35 @@ function checkQuery(key, modId, scenarioId) {
   const normAnswer = normalizeSQL(scenario.answer);
   const keywords = scenario.keywords || [];
 
-  if (normUser === normAnswer) {
+  if (normUser === normAnswer || queriesEquivalent(normUser, normAnswer)) {
     fb.innerHTML='<div class="feedback-box correct">🎉 <strong>Correct!</strong> Your query matches perfectly. The tribe approves!</div>';
     fb.classList.remove('hidden');
     completed[key]=true; save();
-    if(currentModule) refreshModuleView();
+    if(currentModule){
+      // Surgically update only what changed — no DOM rebuild, no scroll jump
+      const scenarioEl = document.getElementById('scenario-'+key);
+      if(scenarioEl){
+        scenarioEl.classList.remove('wrong');
+        scenarioEl.classList.add('done');
+        const btn = scenarioEl.querySelector('.check-btn');
+        if(btn){btn.classList.add('done');btn.textContent='✓';}
+      }
+      // Update module progress bar
+      const mod2 = MODULES.find(m=>m.id===currentModule);
+      if(mod2){
+        const p=modProg(mod2),t=modTotal(mod2),pct=Math.round(p/t*100);
+        const fill=document.querySelector('#module-detail-view .progress-fill');
+        const count=document.querySelector('#module-detail-view .progress-count');
+        if(fill) fill.style.width=pct+'%';
+        if(count) count.textContent=p+'/'+t;
+      }
+      updateGlobal();
+      // Check if module just became fully complete
+      if(modDone(mod2||MODULES.find(m=>m.id===currentModule)) && !completed['celebration-'+currentModule]){
+        completed['celebration-'+currentModule]=true; save();
+        setTimeout(()=>showTribeSpoken(MODULES.find(m=>m.id===currentModule)),300);
+      }
+    }
     return;
   }
 
@@ -782,10 +1116,32 @@ function checkQuery(key, modId, scenarioId) {
   });
   const pct = keywords.length ? Math.round(found.length/keywords.length*100) : 0;
 
+  // Token-level diff: highlight wrong/missing tokens in user query
+  function tokenize(sql) { return sql.trim().split(/\s+/); }
+  function buildDiffHTML(userSQL, answerSQL) {
+    const userTokens = tokenize(userSQL);
+    const answerTokens = tokenize(answerSQL);
+    // Build a set of answer tokens for lookup
+    const answerSet = new Set(answerTokens);
+    // For each user token, check if it exists anywhere in the answer
+    return userTokens.map(tok => {
+      const stripped = tok.replace(/[(),;]/g,'');
+      if (!stripped) return `<span style="color:#c4b8a8">${tok}</span>`;
+      if (answerSet.has(tok) || answerSet.has(stripped)) {
+        return `<span style="color:#8fbc6f">${tok}</span>`;
+      } else {
+        return `<span style="background:rgba(192,57,43,.25);color:#e87878;border-radius:3px;padding:0 2px;text-decoration:underline">${tok}</span>`;
+      }
+    }).join(' ');
+  }
+
   let html = '<div class="feedback-box incorrect">';
   if (pct >= 80) html += `<strong>So close!</strong> You've got ${pct}% of the key elements right.`;
   else if (pct >= 50) html += `<strong>Getting there!</strong> ${pct}% of key elements found.`;
   else html += `<strong>Keep going!</strong> Only ${pct}% of key elements found so far.`;
+
+  // Show diff of user query with wrong parts highlighted
+  html += `<div style="margin-top:10px;background:#1a1612;border-radius:6px;padding:10px 12px;font-family:'JetBrains Mono',monospace;font-size:12px;line-height:1.7;border:1px solid #3a3228"><div style="font-size:9px;font-weight:700;color:#6a6258;letter-spacing:1px;margin-bottom:6px">YOUR QUERY — <span style="color:#8fbc6f">✓ correct</span> · <span style="color:#e87878;text-decoration:underline">✗ check these</span></div>${buildDiffHTML(normUser, normAnswer)}</div>`;
 
   if (found.length) html += `<div style="margin-top:8px"><strong style="color:#2e6b47">✓ You got right:</strong> ${found.map(k=>`<span class="fb-line fb-right">${k}</span>`).join(' ')}</div>`;
   if (missing.length) html += `<div style="margin-top:6px"><strong style="color:#c0392b">✗ Still needed:</strong> ${missing.map(k=>`<span class="fb-line fb-missing">${k}</span>`).join(' ')}</div>`;
@@ -851,10 +1207,11 @@ function checkModuleStruggle(mod){
 // ===== TABS =====
 function switchTab(t){
   document.querySelectorAll('.nav-btn').forEach(b=>b.classList.toggle('active',b.dataset.tab===t));
-  ['lessons','tables','cheatsheet','playground'].forEach(x=>document.getElementById('tab-'+x).classList.toggle('hidden',x!==t));
+  ['lessons','tables','cheatsheet','playground','finale'].forEach(x=>document.getElementById('tab-'+x).classList.toggle('hidden',x!==t));
   if(t!=='lessons')currentModule=null;
   if(t==='lessons')renderModuleGrid();
   if(t==='playground')pgInit();
+  if(t==='finale')ftcInit();
   renderTorches();window.scrollTo(0,0);
 }
 
@@ -878,6 +1235,12 @@ function renderModuleGrid(){
 
 // ===== MODULE DETAIL =====
 function openModule(id){
+  // If we're not on the lessons tab, switch to it first
+  const lessonsTab=document.getElementById('tab-lessons');
+  if(lessonsTab&&lessonsTab.classList.contains('hidden')){
+    document.querySelectorAll('.nav-btn').forEach(b=>b.classList.toggle('active',b.dataset.tab==='lessons'));
+    ['lessons','tables','cheatsheet','playground','finale'].forEach(x=>document.getElementById('tab-'+x).classList.toggle('hidden',x!=='lessons'));
+  }
   const wasDone = modDone(MODULES.find(m=>m.id===id));
   currentModule=id;
   const mod=MODULES.find(m=>m.id===id);
@@ -907,7 +1270,7 @@ function refreshModuleView(){
     const key=mod.id+'-'+s.id;
     const isDone=!!completed[key];
     const isWrong=!isDone&&(wrongAttempts[key]||0)>0;
-    const tags=(s.tables||[]).map(tn=>{const ti=TABLES_INFO.find(x=>x.name===tn);return `<span class="table-tag mono" title="${ti?ti.cols:''}">\u{1F4CB} ${tn}${ti?' ('+ti.rows+')':''}</span>`;}).join('');
+    const tags=(s.tables||[]).map(tn=>{const ti=TABLES_INFO.find(x=>x.name===tn);const colPills=ti?ti.cols.split(',').map(c=>`<span class="ttc-col">${c.trim()}</span>`).join(''):'';return `<span class="table-tag mono">📋 ${tn}${ti?' ('+ti.rows+')':''}<div class="table-tag-cols"><div class="ttc-name">${tn} — COLUMNS</div><div class="ttc-cols">${colPills}</div></div></span>`;}).join('');
     return `<div class="scenario ${isDone?'done':''} ${isWrong?'wrong':''}" id="scenario-${key}">
       <div class="scenario-top"><div><span class="s-label mono">${isBonus?'🗳️ EXTRA VOTE':'SCENARIO'} ${s.id}</span><h4>${s.title}</h4></div>
         <button class="check-btn ${isDone?'done':''}" onclick="toggleDone('${key}')">${isDone?'✓':''}</button></div>
@@ -987,8 +1350,35 @@ function refreshModuleView(){
 }
 
 function toggleDone(key){
-  completed[key]=!completed[key];save();
-  if(currentModule)refreshModuleView();else renderModuleGrid();
+  completed[key]=!completed[key]; save();
+  if(currentModule){
+    const isDone=!!completed[key];
+    // Surgically update scenario card
+    const scenarioEl=document.getElementById('scenario-'+key);
+    if(scenarioEl){
+      scenarioEl.classList.toggle('done',isDone);
+      scenarioEl.classList.remove('wrong');
+      const btn=scenarioEl.querySelector('.check-btn');
+      if(btn){btn.classList.toggle('done',isDone);btn.textContent=isDone?'✓':'';}
+      // Remove existing badge if unchecking
+      const badge=scenarioEl.querySelector('.badge');
+      if(badge)badge.remove();
+    }
+    // Update progress bar
+    const mod2=MODULES.find(m=>m.id===currentModule);
+    if(mod2){
+      const p=modProg(mod2),t=modTotal(mod2),pct=Math.round(p/t*100);
+      const fill=document.querySelector('#module-detail-view .progress-fill');
+      const count=document.querySelector('#module-detail-view .progress-count');
+      if(fill)fill.style.width=pct+'%';
+      if(count)count.textContent=p+'/'+t;
+      updateGlobal();
+      if(modDone(mod2)&&!completed['celebration-'+mod2.id]){
+        completed['celebration-'+mod2.id]=true;save();
+        setTimeout(()=>showTribeSpoken(mod2),300);
+      }
+    }
+  } else { renderModuleGrid(); }
 }
 function togglePanel(btn,id){const p=document.getElementById(id);const h=p.classList.contains('hidden');p.classList.toggle('hidden');btn.classList.toggle('open',h);}
 function toggleAI(key){
@@ -1530,6 +1920,372 @@ function toggleLivePanel(btn,id){
   const el=document.getElementById(id);
   const nowHidden=el.classList.toggle('hidden');
   btn.classList.toggle('open',!nowHidden);
+}
+
+// ===== FINAL TRIBAL COUNCIL =====
+const FTC_TORCH_COLORS = ['#d4611e','#e8943e','#2e6b47','#6ab57a','#c4b8a8','#8a7e70'];
+
+// Survivor-themed chart color palette
+const FTC_PALETTE = [
+  '#d4611e','#e8943e','#f5c97a',  // torch / amber
+  '#2e6b47','#6ab57a','#a8d8b8',  // jungle greens
+  '#8a7060','#c4b8a8','#f5e6cc',  // sand / neutral
+  '#1a3a5c','#3b7ab5','#7ab5e8',  // ocean blues
+];
+
+let ftcDB = null;
+let ftcInitStarted = false;
+let ftcCurrentPhase = 1;
+let ftcChartInstances = {}; // phase -> Chart instance
+let ftcChartTypes = {1:'bar', 3:'bar'};
+let ftcResultData = {}; // phase -> {columns, rows}
+
+// Jury questions — 3 questions requiring specific SQL techniques
+const FTC_JURY = [
+  {
+    juror:'🧑‍⚖️', name:'Jury Member 1 — The Stats Nerd',
+    role:'Former data analyst, eliminated at final 5',
+    question:'"You keep talking about domination. Prove it. Give me the top 5 seasons by average IMDB rating — with a GROUP BY."',
+    hint:'SELECT season, AVG(imdb_rating) AS avg_rating FROM episodes GROUP BY season ORDER BY avg_rating DESC LIMIT 5;',
+    validate: (sql) => {
+      const s = sql.toUpperCase();
+      return s.includes('GROUP BY') && s.includes('AVG') && (s.includes('IMDB') || s.includes('RATING')) && s.includes('LIMIT');
+    }
+  },
+  {
+    juror:'👩‍⚖️', name:'Jury Member 2 — The Alliance Queen',
+    role:'Social player, pulled off 3 blindsides',
+    question:'"I want to know about relationships. Show me which castaways played together more than once — that\'s your real alliance. Use a JOIN."',
+    hint:'Join castaways to castaway_details on castaway_id, or self-join castaways to find repeat players with COUNT(*) > 1 GROUP BY castaway_id.',
+    validate: (sql) => {
+      const s = sql.toUpperCase();
+      return (s.includes('JOIN') || s.includes('GROUP BY')) && (s.includes('CASTAWAY') || s.includes('SEASON'));
+    }
+  },
+  {
+    juror:'🧓', name:'Jury Member 3 — The Superfan',
+    role:'Watched every season, knew every strategic move',
+    question:'"Impress me. Write something with a CTE or a window function. I want to see rank, running totals, or era comparisons. Make it complex."',
+    hint:'Use WITH ... AS (...) for a CTE, or RANK()/SUM() OVER (...) for a window function. Example: rank seasons by viewership within each era.',
+    validate: (sql) => {
+      const s = sql.toUpperCase();
+      return s.includes('WITH ') || s.includes(' OVER ') || s.includes('PARTITION BY') || s.includes('RANK()') || s.includes('ROW_NUMBER()');
+    }
+  }
+];
+
+let ftcJurySolved = [false, false, false];
+
+function ftcInit() {
+  if (ftcInitStarted) return;
+  ftcInitStarted = true;
+  // Share the playground DB if already loaded
+  if (pgDB) { ftcDB = pgDB; ftcPhaseReady(); return; }
+  // Show loading indicator
+  const loadingEl = document.getElementById('ftc-loading');
+  if (loadingEl) loadingEl.classList.remove('hidden');
+  // Start loading DB independently (safe path)
+  ftcLoadDBIndependent();
+}
+
+async function ftcLoadDBIndependent() {
+  // If pgInitStarted already, just poll for pgDB
+  if (pgInitStarted) {
+    const poll = setInterval(() => {
+      if (pgDB) { clearInterval(poll); ftcDB = pgDB; const l=document.getElementById('ftc-loading');if(l)l.classList.add('hidden'); ftcPhaseReady(); }
+    }, 300);
+    return;
+  }
+  // Load DB ourselves
+  try {
+    const SQL = await initSqlJs({ locateFile: f => `https://cdnjs.cloudflare.com/ajax/libs/sql.js/1.10.3/${f}` });
+    const resp = await fetch('/survivor.db');
+    const buf = await resp.arrayBuffer();
+    pgDB = new SQL.Database(new Uint8Array(buf));
+    pgInitStarted = true; // so playground reuses it
+    ftcDB = pgDB;
+    const l = document.getElementById('ftc-loading');
+    if (l) l.classList.add('hidden');
+    ftcPhaseReady();
+  } catch(e) {
+    const l = document.getElementById('ftc-loading');
+    if (l) l.innerHTML = `<span style="color:#e87878">⚠️ Could not load database: ${e.message}</span>`;
+  }
+}
+
+function ftcPhaseReady() {
+  document.getElementById('ftc-loading')?.classList.add('hidden');
+  ftcRenderJuryQuestions();
+  ftcSetRibbonStep(ftcCurrentPhase);
+}
+
+function ftcSetRibbonStep(step) {
+  for (let i = 1; i <= 4; i++) {
+    const el = document.getElementById('ftc-step-' + i);
+    if (!el) continue;
+    el.classList.remove('active','done');
+    if (i < step) el.classList.add('done');
+    else if (i === step) el.classList.add('active');
+  }
+}
+
+function ftcAdvance(toPhase) {
+  ftcCurrentPhase = toPhase;
+  for (let i = 1; i <= 4; i++) {
+    const ph = document.getElementById('ftc-phase-' + i);
+    if (ph) ph.classList.toggle('hidden', i !== toPhase);
+  }
+  ftcSetRibbonStep(toPhase);
+  if (toPhase === 4) {
+    const name = localStorage.getItem('ssq_username') || 'You';
+    document.getElementById('ftc-winner-name').textContent = name;
+  }
+  window.scrollTo(0, 0);
+}
+
+function ftcLoadPrompt(phase, sql) {
+  const ed = document.getElementById('ftc-editor-' + phase);
+  if (ed) ed.value = sql;
+}
+
+function ftcClear(phase) {
+  const ed = document.getElementById('ftc-editor-' + phase);
+  if (ed) ed.value = '';
+  const ra = document.getElementById('ftc-results-' + phase);
+  if (ra) { ra.classList.add('hidden'); ra.innerHTML = ''; }
+  const ca = document.getElementById('ftc-chart-area-' + phase);
+  if (ca) ca.classList.add('hidden');
+  if (ftcChartInstances[phase]) { ftcChartInstances[phase].destroy(); delete ftcChartInstances[phase]; }
+}
+
+async function ftcRun(phase) {
+  if (!ftcDB) {
+    const ra = document.getElementById('ftc-results-' + phase);
+    ra.innerHTML = '<div class="ftc-error-box">Database not ready yet — please wait a moment.</div>';
+    ra.classList.remove('hidden'); return;
+  }
+  const sql = (document.getElementById('ftc-editor-' + phase)?.value || '').trim();
+  if (!sql) return;
+  const btn = document.getElementById('ftc-run-' + phase);
+  btn.disabled = true; btn.textContent = '⏳ Running...';
+  const ra = document.getElementById('ftc-results-' + phase);
+  ra.classList.remove('hidden');
+  try {
+    const results = ftcDB.exec(sql);
+    if (!results || !results.length) {
+      ra.innerHTML = '<div style="padding:14px;color:#6a6258;font-size:13px">Query ran successfully — no rows returned.</div>';
+      ftcResultData[phase] = null;
+    } else {
+      const {columns, values} = results[0];
+      ftcResultData[phase] = {columns, rows: values};
+      // Build table
+      let th = columns.map(c=>`<th>${c}</th>`).join('');
+      let tb = values.slice(0,200).map(r=>`<tr>${r.map(v=>`<td>${v==null?'<span style="color:#5a5248;font-style:italic">null</span>':v}</td>`).join('')}</tr>`).join('');
+      ra.innerHTML = `<table class="ftc-table"><thead><tr>${th}</tr></thead><tbody>${tb}</tbody></table>`;
+      // Show chart controls if 2+ columns
+      if (columns.length >= 2) ftcShowChartControls(phase, columns);
+    }
+  } catch(e) {
+    ra.innerHTML = `<div class="ftc-error-box">${e.message}</div>`;
+    ftcResultData[phase] = null;
+  }
+  btn.disabled = false; btn.textContent = '▶ Run Query';
+}
+
+function ftcShowChartControls(phase, columns) {
+  const ca = document.getElementById('ftc-chart-area-' + phase);
+  ca.classList.remove('hidden');
+  // Populate axis selects
+  const xsel = document.getElementById('ftc-xcol-' + phase);
+  const ysel = document.getElementById('ftc-ycol-' + phase);
+  if (!xsel || !ysel) return;
+  const opts = columns.map((c,i)=>`<option value="${i}">${c}</option>`).join('');
+  xsel.innerHTML = opts;
+  ysel.innerHTML = opts;
+  // Default: x=col0, y=col1
+  xsel.value = '0';
+  ysel.value = columns.length > 1 ? '1' : '0';
+  ftcRenderChart(phase);
+}
+
+function ftcSetChartType(phase, type, btn) {
+  ftcChartTypes[phase] = type;
+  document.querySelectorAll(`.ftc-chart-type-btn[data-phase="${phase}"]`).forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  ftcRenderChart(phase);
+}
+
+function ftcRenderChart(phase) {
+  const data = ftcResultData[phase];
+  if (!data) return;
+  const xIdx = parseInt(document.getElementById('ftc-xcol-' + phase)?.value || '0');
+  const yIdx = parseInt(document.getElementById('ftc-ycol-' + phase)?.value || '1');
+  const titleEl = document.getElementById('ftc-chart-title-' + phase);
+  const chartTitle = titleEl ? titleEl.value || 'Survivor Data' : 'Survivor Data';
+  const type = ftcChartTypes[phase] || 'bar';
+
+  const labels = data.rows.map(r => String(r[xIdx] ?? ''));
+  const values = data.rows.map(r => {
+    const v = r[yIdx];
+    return v == null ? 0 : (isNaN(Number(v)) ? 0 : Number(v));
+  });
+
+  const canvas = document.getElementById('ftc-canvas-' + phase);
+  if (!canvas) return;
+
+  if (ftcChartInstances[phase]) { ftcChartInstances[phase].destroy(); }
+
+  // Survivor-themed chart config
+  const isHoriz = type === 'horizontalBar';
+  const chartType = isHoriz ? 'bar' : type;
+  const isDoughnut = type === 'doughnut';
+
+  const bgColors = isDoughnut
+    ? data.rows.map((_,i) => FTC_PALETTE[i % FTC_PALETTE.length])
+    : FTC_PALETTE[0];
+  const borderColors = isDoughnut
+    ? data.rows.map((_,i) => FTC_PALETTE[i % FTC_PALETTE.length])
+    : '#c0551a';
+
+  ftcChartInstances[phase] = new Chart(canvas, {
+    type: chartType,
+    data: {
+      labels,
+      datasets: [{
+        label: data.columns[yIdx],
+        data: values,
+        backgroundColor: bgColors,
+        borderColor: borderColors,
+        borderWidth: isDoughnut ? 2 : 1,
+        borderRadius: isDoughnut ? 0 : 4,
+      }]
+    },
+    options: {
+      indexAxis: isHoriz ? 'y' : 'x',
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: { display: isDoughnut, labels: { color: '#3a3228', font: { family: 'Newsreader,Georgia,serif', size: 12 } } },
+        title: {
+          display: true,
+          text: chartTitle,
+          color: '#d4611e',
+          font: { family: 'Newsreader,Georgia,serif', size: 16, weight: 'bold' },
+          padding: { bottom: 12 }
+        }
+      },
+      scales: isDoughnut ? {} : {
+        x: {
+          ticks: { color: '#6a6258', font: { family: "'JetBrains Mono',monospace", size: 10 }, maxRotation: 45 },
+          grid: { color: '#e8e0d4' }
+        },
+        y: {
+          ticks: { color: '#6a6258', font: { family: "'JetBrains Mono',monospace", size: 10 } },
+          grid: { color: '#e8e0d4' }
+        }
+      }
+    }
+  });
+  // Fix canvas height
+  canvas.parentElement.style.height = '360px';
+}
+
+function ftcSaveChart(phase) {
+  const canvas = document.getElementById('ftc-canvas-' + phase);
+  if (!canvas || !ftcChartInstances[phase]) {
+    alert('Run a query and build a chart first!'); return;
+  }
+  // Draw onto a new canvas with white background + Survivor watermark
+  const src = canvas;
+  const out = document.createElement('canvas');
+  out.width = src.width; out.height = src.height;
+  const ctx = out.getContext('2d');
+  ctx.fillStyle = '#fff';
+  ctx.fillRect(0, 0, out.width, out.height);
+  ctx.drawImage(src, 0, 0);
+  // Watermark
+  ctx.font = 'bold 11px JetBrains Mono, monospace';
+  ctx.fillStyle = 'rgba(212,97,30,0.4)';
+  ctx.textAlign = 'right';
+  ctx.fillText('🔥 Learn SQL with SURVIVOR — cornettlabs.com', out.width - 10, out.height - 8);
+  const link = document.createElement('a');
+  const titleEl = document.getElementById('ftc-chart-title-' + phase);
+  const titleText = (titleEl?.value || 'survivor-chart').replace(/\s+/g,'-').toLowerCase();
+  link.download = `${titleText}.png`;
+  link.href = out.toDataURL('image/png');
+  link.click();
+}
+
+function ftcRenderJuryQuestions() {
+  const container = document.getElementById('ftc-jury-questions');
+  if (!container) return;
+  container.innerHTML = FTC_JURY.map((jq, i) => {
+    const idx = i;
+    return `<div class="ftc-jury-card ${ftcJurySolved[idx]?'solved':''}" id="ftc-jury-card-${idx}">
+      <div class="ftc-jury-juror">
+        <div class="ftc-juror-avatar">${jq.juror}</div>
+        <div><div class="ftc-juror-name">${jq.name}</div><div class="ftc-juror-role mono">${jq.role}</div></div>
+        ${ftcJurySolved[idx]?'<span style="margin-left:auto;font-size:20px">✅</span>':''}
+      </div>
+      <p class="ftc-jury-q">${jq.question}</p>
+      <div class="ftc-jury-hint">💡 ${jq.hint}</div>
+      <div class="ftc-editor-wrap">
+        <div class="ftc-editor-hdr">
+          <span class="ftc-editor-label mono">YOUR ANSWER</span>
+          <div style="display:flex;gap:6px">
+            <button class="ftc-run-btn mono" onclick="ftcRunJury(${idx})">▶ Run & Check</button>
+          </div>
+        </div>
+        <textarea class="ftc-editor mono" id="ftc-jury-editor-${idx}" style="min-height:80px" spellcheck="false" placeholder="-- Write your SQL here...">${ftcJurySolved[idx]?'-- ✅ Already answered!':''}</textarea>
+      </div>
+      <div id="ftc-jury-results-${idx}" style="margin-top:8px;max-height:200px;overflow:auto;background:#1a1612;border:1px solid #3a3228;border-radius:7px;display:none"></div>
+      <div class="ftc-jury-feedback ${ftcJurySolved[idx]?'correct':''}" id="ftc-jury-fb-${idx}" style="${ftcJurySolved[idx]?'':'display:none'}">
+        ${ftcJurySolved[idx]?'🎉 The jury nods. That\'s a good answer.':''}
+      </div>
+    </div>`;
+  }).join('');
+}
+
+async function ftcRunJury(idx) {
+  if (!ftcDB) { alert('Database still loading — try again in a moment.'); return; }
+  const sql = (document.getElementById('ftc-jury-editor-' + idx)?.value || '').trim();
+  if (!sql) return;
+  const resultsEl = document.getElementById('ftc-jury-results-' + idx);
+  const fbEl = document.getElementById('ftc-jury-fb-' + idx);
+
+  try {
+    const results = ftcDB.exec(sql);
+    resultsEl.style.display = 'block';
+    if (!results || !results.length) {
+      resultsEl.innerHTML = '<div style="padding:10px;color:#6a6258;font-size:12px">No rows returned.</div>';
+    } else {
+      const {columns, values} = results[0];
+      let th = columns.map(c=>`<th>${c}</th>`).join('');
+      let tb = values.slice(0,50).map(r=>`<tr>${r.map(v=>`<td>${v==null?'null':v}</td>`).join('')}</tr>`).join('');
+      resultsEl.innerHTML = `<table class="ftc-table"><thead><tr>${th}</tr></thead><tbody>${tb}</tbody></table>`;
+    }
+    // Validate
+    const jq = FTC_JURY[idx];
+    const passed = jq.validate(sql);
+    fbEl.style.display = 'block';
+    if (passed) {
+      ftcJurySolved[idx] = true;
+      fbEl.className = 'ftc-jury-feedback correct';
+      fbEl.textContent = '🎉 The jury nods. That\'s a good answer.';
+      document.getElementById('ftc-jury-card-' + idx).classList.add('solved');
+      // Check if all solved
+      if (ftcJurySolved.every(Boolean)) {
+        document.getElementById('ftc-jury-advance').classList.remove('hidden');
+      }
+    } else {
+      fbEl.className = 'ftc-jury-feedback incorrect';
+      fbEl.textContent = '🤔 The jury isn\'t convinced. Check the hint — make sure you\'re using the right SQL technique for this question.';
+    }
+  } catch(e) {
+    resultsEl.style.display = 'block';
+    resultsEl.innerHTML = `<div class="ftc-error-box">${e.message}</div>`;
+    fbEl.style.display = 'none';
+  }
 }
 
 // ===== INIT =====
