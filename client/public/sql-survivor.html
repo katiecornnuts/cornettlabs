@@ -873,7 +873,7 @@ const MODULES=[
 
 const CHEAT=[["SELECT","Choose columns","SELECT castaway, season"],["FROM","Specify table","FROM castaways"],["WHERE","Filter rows","WHERE season = 47"],["AND / OR","Combine conditions","WHERE s=47 AND place=1"],["ORDER BY","Sort results","ORDER BY rating DESC"],["LIMIT","Cap rows","LIMIT 10"],["COUNT(*)","Count rows","SELECT COUNT(*)"],["SUM(col)","Add values","SUM(confessional_count)"],["AVG(col)","Mean","AVG(imdb_rating)"],["GROUP BY","Summarize","GROUP BY season"],["HAVING","Filter groups","HAVING COUNT(*)>5"],["JOIN...ON","Combine tables","JOIN d ON a.id=b.id"],["CASE WHEN","Conditional","CASE WHEN x>5 THEN 'High'"],["LIKE","Pattern match","WHERE name LIKE '%Rob%'"],["RANK() OVER","Window rank","RANK() OVER (ORDER BY x)"],["AS","Rename column","COUNT(*) AS total"]];
 
-// ===== LIVE PRACTICE QUESTIONS =====
+// ===== LIVE PRACTICE QUESTIONS (removed — scenarios now run live directly) =====
 const LIVE_QUESTIONS = {
 1:[
  {id:'1.L1',title:'Explore All Seasons',compound:false,challenge:'Pull every season\'s name, location, country, and winner from <code>season_summary</code>. What patterns do you notice?',hint:'SELECT season_name, location, country, winner FROM season_summary.',answer:'SELECT season_name, location, country, winner\nFROM season_summary;'},
@@ -1286,6 +1286,7 @@ function refreshModuleView(){
         <textarea class="sql-editor mono" id="editor-${key}" placeholder="Write your SQL here..." spellcheck="false" oninput="saveQ('${key}',this.value)">${userQueries[key]||''}</textarea></div>
       <div class="toggle-row">
         <button class="check-query-btn mono" onclick="checkQuery('${key}',${mod.id},'${s.id}')">⚡ Check Query</button>
+        <button class="live-run-btn mono" id="live-run-btn-${key}" onclick="scenarioRun('${key}')">▶ Run Query</button>
         <button class="hint-btn" onclick="togglePanel(this,'hint-${key}')">💡 Hint</button>
         <button class="answer-btn" onclick="togglePanel(this,'answer-${key}')">✅ Answer</button>
         <button class="ai-toggle" onclick="toggleAI('${key}')">🤖 AI Tutor</button>
@@ -1296,6 +1297,14 @@ function refreshModuleView(){
       <div id="ai-${key}" class="hidden ai-section"><div class="ai-panel"><div class="ai-messages" id="ai-msgs-${key}"><div class="ai-msg system">Ask anything — I'll guide without spoiling.</div></div>
         <div class="ai-input-row"><input class="ai-input" id="ai-input-${key}" placeholder="e.g. What does GROUP BY do here?" onkeydown="if(event.key==='Enter'){sendAI('${key}',${mod.id},'${s.id}');event.preventDefault()}">
         <button class="ai-send mono" id="ai-send-${key}" onclick="sendAI('${key}',${mod.id},'${s.id}')">Send</button></div></div></div>
+      <div class="live-results-box" id="live-results-box-${key}">
+        <div class="live-results-hdr">
+          <span class="live-results-lbl mono">RESULTS</span>
+          <span class="live-results-ct" id="live-results-ct-${key}" style="display:none"></span>
+          <span class="live-results-ms" id="live-results-ms-${key}" style="display:none"></span>
+        </div>
+        <div class="live-results-body" id="live-results-body-${key}"></div>
+      </div>
     </div>`;
   };
 
@@ -1304,38 +1313,6 @@ function refreshModuleView(){
   if(mod.bonus&&mod.bonus.length){
     html+=`<div class="bonus-section"><div class="bonus-title">🗳️ Cast an Extra Vote — Bonus Scenarios</div>`;
     mod.bonus.forEach(s=>{html+=renderScenario(s,true);});
-    html+=`</div>`;
-  }
-
-  // Live Practice section
-  const lqs=LIVE_QUESTIONS[mod.id]||[];
-  if(lqs.length>0){
-    html+=`<div class="live-section"><div class="live-title">🟢 Live Practice &mdash; Real Queries on Real Survivor Data</div>`;
-    lqs.forEach(q=>{
-      const key=mod.id+'-'+q.id;
-      html+=`<div class="live-q">
-        <div class="live-q-label mono">${q.compound?'🔗 COMPOUND CHALLENGE':'⚡ FOCUSED PRACTICE'} &mdash; ${q.id}</div>
-        <div class="live-q-title">${q.title}</div>
-        <p class="live-challenge">${q.challenge}</p>
-        <div style="margin-bottom:10px"><div class="editor-label mono">Your SQL</div>
-          <textarea class="live-editor mono" id="live-editor-${key}" placeholder="Write your SQL here and click Run..." spellcheck="false"></textarea></div>
-        <div class="toggle-row">
-          <button class="live-run-btn mono" id="live-run-btn-${key}" onclick="liveRun('${key}')">▶ Run Query</button>
-          <button class="live-hint-btn" onclick="toggleLivePanel(this,'live-hint-${key}')">💡 Hint</button>
-          <button class="live-answer-btn" onclick="toggleLivePanel(this,'live-answer-${key}')">✅ Reference Answer</button>
-        </div>
-        <div id="live-hint-${key}" class="hidden"><div class="hint-box">💡 ${q.hint}</div></div>
-        <div id="live-answer-${key}" class="hidden"><div class="answer-header">REFERENCE ANSWER</div>`+codeBlockHTML(q.answer,'live-code-'+key)+`</div>
-        <div class="live-results-box" id="live-results-box-${key}">
-          <div class="live-results-hdr">
-            <span class="live-results-lbl mono">RESULTS</span>
-            <span class="live-results-ct" id="live-results-ct-${key}" style="display:none"></span>
-            <span class="live-results-ms" id="live-results-ms-${key}" style="display:none"></span>
-          </div>
-          <div class="live-results-body" id="live-results-body-${key}"></div>
-        </div>
-      </div>`;
-    });
     html+=`</div>`;
   }
 
@@ -1866,6 +1843,34 @@ async function ensureDBReady(){
     await new Promise(resolve=>{const iv=setInterval(()=>{if(pgReady){clearInterval(iv);resolve();}},150);});
   }
   return pgDB;
+}
+
+// ===== SCENARIO LIVE RUN =====
+async function scenarioRun(key){
+  const editor=document.getElementById('editor-'+key);
+  const btn=document.getElementById('live-run-btn-'+key);
+  const box=document.getElementById('live-results-box-'+key);
+  const ctEl=document.getElementById('live-results-ct-'+key);
+  const msEl=document.getElementById('live-results-ms-'+key);
+  const body=document.getElementById('live-results-body-'+key);
+  const sql=(editor?.value||'').trim();
+  if(!sql) return;
+  if(btn){btn.disabled=true;btn.textContent='⏳ Running...';}
+  box.classList.add('visible');
+  body.innerHTML='<div style="padding:18px;text-align:center;color:#4a7a5a;font-size:13px">⏳ Running query...</div>';
+  ctEl.style.display='none'; msEl.style.display='none';
+  try{
+    const db=await ensureDBReady();
+    const t0=performance.now();
+    const results=db.exec(sql);
+    const ms=parseFloat((performance.now()-t0).toFixed(1));
+    renderLiveResults(body,ctEl,msEl,results,ms);
+  }catch(err){
+    body.innerHTML=`<div class="pg-error-box">Error: ${pgEsc(err.message)}</div>`;
+    ctEl.style.display='none'; msEl.style.display='none';
+  }finally{
+    if(btn){btn.disabled=false;btn.textContent='▶ Run Query';}
+  }
 }
 
 async function liveRun(key){
